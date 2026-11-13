@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  version: MyString
+  enunciado: MyText
+  enumeracion: 1
+  respuesta: MyString
+  ayuda: MyText
+  explicacion: MyText
+  autor: MyString
+  definiciones: 
+  indicadores: 
+  materiales: 
+  tipo: one
+  dificultad: one
+
+two:
+  version: MyString
+  enunciado: MyText
+  enumeracion: 1
+  respuesta: MyString
+  ayuda: MyText
+  explicacion: MyText
+  autor: MyString
+  definiciones: 
+  indicadores: 
+  materiales: 
+  tipo: two
+  dificultad: two
