@@ -10,6 +10,14 @@
 #   inflect.uncountable %w( fish sheep )
 # end
 
+# Usa :en como locale porque `bin/rails g model` usa inglés por defecto y parece no poder cambiarse.
+ActiveSupport::Inflector.inflections(:en) do |inflect|
+    inflect.irregular "definicion", "definiciones"
+    inflect.irregular "dificultad", "dificultades"
+    inflect.irregular "indicador", "indicadores"
+    inflect.irregular "material", "materiales"
+end
+
 # These inflection rules are supported but not enabled by default:
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym "RESTful"
