@@ -24,10 +24,7 @@ class Criptico < ApplicationRecord
 
   def coincide_enumeracion_y_largo_respuesta
     if enumeracion != respuesta.length
-      error.add(:enumeracion, "debe coincidir con el largo de la respuesta")
+      errors.add(:enumeracion, "debe coincidir con el largo de la respuesta")
     end
   end
-
-
-
 end

@@ -10,7 +10,7 @@
 Dificultad.create([
   { dificultad: "fácil", multiplicador: 1, tiempo: 60 },
   { dificultad: "medio", multiplicador: 2, tiempo: 180 },
-  { dificultad: "avanzado", multiplicador: 3, tiempo: 300 },
+  { dificultad: "avanzado", multiplicador: 3, tiempo: 300 }
 ])
 
 Tipo.create([
@@ -26,7 +26,7 @@ Tipo.create([
   { tipo: "finales", puntos: 100, descripcion: "Las últimas letras de palabras seguidas." },
   { tipo: "sustitucion", puntos: 100, descripcion: "Se cambia una letra por otra." },
   { tipo: "simbolos", puntos: 100, descripcion: "Abreviaturas convencionales: números romanos, puntos cardinales, elementos químicos, notas musicales." },
-  { tipo: "combinada", puntos: 100, descripcion: "Dos o más operaciones en el mismo enunciado." },
+  { tipo: "combinada", puntos: 100, descripcion: "Dos o más operaciones en el mismo enunciado." }
 ])
 
 Criptico.create([
@@ -36,13 +36,13 @@ Criptico.create([
     enunciado: "Mi metido en el hogar da una prenda",
     enumeracion: 6,
     respuesta: "CAMISA",
-    definiciones: ["una prenda"],
-    indicadores: ["metido en"],
-    materiales: ["Mi", "el hogar"],
+    definiciones: [ "una prenda" ],
+    indicadores: [ "metido en" ],
+    materiales: [ "Mi", "el hogar" ],
     tipo: Tipo.find_by(tipo: "contenedor"),
     dificultad: Dificultad.find_by(dificultad: "medio"),
     ayuda: "El hogar es una palabra de cuatro letras. Partila al medio y meté MI.",
     explicacion: "MI dentro de CASA (el hogar): CA + MI + SA = CAMISA.",
-    autor: "Cátedra",
+    autor: "Cátedra"
   }
 ])
