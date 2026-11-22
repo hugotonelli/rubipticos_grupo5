@@ -2,7 +2,7 @@
 
 <div class="py-5 text-center">
   <h1 class="display-5 fw-bold">Rubípticos</h1>
-  <p class="lead">Crípticos en Ruby: acertijos de palabras en español.</p>
-  <%# TODO: texto de bienvenida configurable desde el backend y botón para jugar. %>
+  <p class="lead"><%= @configuracion.texto_bienvenida %></p>
+  <%# TODO: botón para jugar cuando exista el flujo de partida. %>
   <%= link_to "Cómo se juega", como_se_juega_path, class: "btn btn-outline-danger" %>
 </div>
