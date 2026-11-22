@@ -1,0 +1,7 @@
+inicial:
+  user: one
+  url: https://ecorrons.github.io/cryptics-api/v1/cryptics.json
+  version: 2026-10-19.1
+  estado: <%= Sincronizacion.estados[:exitosa] %>
+  creados: 34
+  created_at: <%= 2.days.ago %>

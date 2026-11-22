@@ -11,6 +11,8 @@ Rails.application.routes.draw do
   # todos heredan de Admin::BaseController.
   namespace :admin do
     root "inicio#index"
+    # Historial, «Sincronizar ahora» (create) e informe de cada sincronización.
+    resources :sincronizaciones, only: %i[index create show]
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

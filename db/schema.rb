@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_22_002545) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_005227) do
   create_table "configuraciones", force: :cascade do |t|
     t.string "url_fuente", null: false
     t.text "texto_bienvenida", default: "", null: false
@@ -34,10 +34,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_002545) do
     t.integer "dificultad_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "origen", default: "catedra", null: false
+    t.boolean "desactivado_por_sincronizacion", default: false, null: false
     t.index ["activo"], name: "index_cripticos_on_activo"
     t.index ["dificultad_id"], name: "index_cripticos_on_dificultad_id"
     t.index ["id_fuente"], name: "index_cripticos_on_id_fuente", unique: true
+    t.index ["origen"], name: "index_cripticos_on_origen"
     t.index ["tipo_id"], name: "index_cripticos_on_tipo_id"
+    t.check_constraint "origen IN ('catedra', 'propio')", name: "cripticos_origen_valido"
   end
 
   create_table "dificultades", force: :cascade do |t|
@@ -97,6 +101,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_002545) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "sincronizaciones", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "url", null: false
+    t.string "version"
+    t.integer "estado", null: false
+    t.text "mensaje"
+    t.integer "creados", default: 0, null: false
+    t.integer "actualizados", default: 0, null: false
+    t.integer "desactivados", default: 0, null: false
+    t.integer "rechazados", default: 0, null: false
+    t.json "detalle_rechazados", default: [], null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["estado", "created_at"], name: "index_sincronizaciones_on_estado_and_created_at"
+    t.index ["user_id"], name: "index_sincronizaciones_on_user_id"
+    t.check_constraint "creados >= 0 AND actualizados >= 0 AND desactivados >= 0 AND rechazados >= 0", name: "sincronizaciones_cantidades_no_negativas"
+    t.check_constraint "estado IN (0, 1, 2)", name: "sincronizaciones_estado_valido"
+  end
+
   create_table "tipos", force: :cascade do |t|
     t.string "nombre", null: false
     t.integer "puntos", default: 100, null: false
@@ -123,4 +146,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_002545) do
   add_foreign_key "partidas", "cripticos"
   add_foreign_key "partidas", "jugadores"
   add_foreign_key "sessions", "users"
+  add_foreign_key "sincronizaciones", "users"
 end

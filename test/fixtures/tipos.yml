@@ -1,9 +1,6 @@
-anagrama:
-  nombre: anagrama
-  descripcion: Reordenar las letras del material.
+# Los 13 tipos del enunciado, como los carga db/seeds.rb.
+<% Tipo::NOMBRES.each_key do |nombre| %>
+<%= nombre %>:
+  nombre: <%= nombre %>
   puntos: 100
-
-contenedor:
-  nombre: contenedor
-  descripcion: Una pieza va dentro de otra.
-  puntos: 100
+<% end %>

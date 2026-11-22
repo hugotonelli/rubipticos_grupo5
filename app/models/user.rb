@@ -2,6 +2,7 @@
 class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
+  has_many :sincronizaciones, dependent: :restrict_with_error
 
   # editor_puntajes: solo ve y edita los puntos por tipo y los multiplicadores.
   # administrador: puede hacer todo en el backend.

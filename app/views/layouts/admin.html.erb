@@ -15,8 +15,11 @@
         </button>
         <div class="collapse navbar-collapse" id="menu-admin">
           <ul class="navbar-nav me-auto">
-            <%# TODO: links a las secciones del backend. Los que son solo para administradores van dentro de
+            <%# Links a las secciones del backend. Los que son solo para administradores van dentro de
                 `if Current.user.administrador?` (y además Admin::BaseController los protege en el servidor). %>
+            <% if Current.user.administrador? %>
+              <li class="nav-item"><%= link_to "Sincronización", admin_sincronizaciones_path, class: "nav-link" %></li>
+            <% end %>
           </ul>
           <ul class="navbar-nav">
             <li class="nav-item"><%= link_to "Ver el sitio", root_path, class: "nav-link" %></li>

@@ -39,24 +39,13 @@ end
 Configuracion.actual
 
 # Admin de prueba (las credenciales están en el README).
-User.find_or_create_by!(email_address: "admin@rubipticos.com") do |user|
+admin = User.find_or_create_by!(email_address: "admin@rubipticos.com") do |user|
   user.password = "rubipticos"
   user.rol = :administrador
 end
 
-# TODO: reemplazar por el SincronizadorDeCripticos (el enunciado pide que db:seed use el mismo sincronizador).
-Criptico.find_or_create_by!(id_fuente: "cr-013") do |criptico|
-  criptico.assign_attributes(
-    enunciado: "Mi metido en el hogar da una prenda",
-    enumeracion: 6,
-    respuesta: "CAMISA",
-    definiciones: [ "una prenda" ],
-    indicadores: [ "metido en" ],
-    materiales: [ "Mi", "el hogar" ],
-    tipo: Tipo.find_by!(nombre: "contenedor"),
-    dificultad: Dificultad.find_by!(nombre: "medio"),
-    ayuda: "El hogar es una palabra de cuatro letras. Partila al medio y meté MI.",
-    explicacion: "MI dentro de CASA (el hogar): CA + MI + SA = CAMISA.",
-    autor: "Cátedra"
-  )
-end
+# Catálogo de crípticos: se carga con el mismo sincronizador que usa el backend (lo pide el enunciado).
+# Necesita conexión a internet; si falla, la sincronización queda registrada como fallida y se puede
+# reintentar con `bin/rails db:seed` o desde el backend.
+sincronizacion = SincronizadorDeCripticos.call(usuario: admin)
+puts "Sincronización del catálogo: #{sincronizacion.resumen}"
