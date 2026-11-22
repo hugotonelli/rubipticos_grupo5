@@ -1,43 +1,48 @@
 <% content_for :title, "Informe de sincronización" %>
 
-<p><%= link_to "← Volver a sincronización", admin_sincronizaciones_path %></p>
+<p class="small mb-3">
+  <%= link_to admin_sincronizaciones_path, class: "link-secondary text-decoration-none" do %>
+    <i class="bi bi-arrow-left"></i> Sincronización
+  <% end %>
+</p>
 
-<h1 class="h3 mb-1">Informe de sincronización <%= badge_de_estado(@sincronizacion) %></h1>
-<p class="text-body-secondary">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+  <h1 class="h3 mb-0">Informe</h1>
+  <%= badge_de_estado(@sincronizacion) %>
+</div>
+<p class="small text-body-secondary mb-4">
   <%= l(@sincronizacion.created_at, format: :long) %> · <%= @sincronizacion.user.email_address %>
   <% if @sincronizacion.version %> · versión <%= @sincronizacion.version %><% end %>
+  <br><span class="text-break"><i class="bi bi-link-45deg"></i> <%= @sincronizacion.url %></span>
 </p>
-<p class="small text-body-secondary text-break">Fuente: <code><%= @sincronizacion.url %></code></p>
 
 <% if @sincronizacion.fallida? %>
   <div class="alert alert-danger">
     <strong>No se tocó nada.</strong> <%= @sincronizacion.mensaje %>
   </div>
 <% elsif @sincronizacion.sin_cambios? %>
-  <div class="alert alert-secondary">
+  <div class="alert alert-light border">
     Sin cambios: la versión de la fuente es la misma de la última sincronización exitosa.
   </div>
 <% else %>
-  <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
-    <% { "Creados" => @sincronizacion.creados, "Actualizados" => @sincronizacion.actualizados,
-         "Desactivados" => @sincronizacion.desactivados, "Rechazados" => @sincronizacion.rechazados }.each do |titulo, cantidad| %>
+  <div class="row row-cols-2 row-cols-md-4 g-2 mb-4">
+    <% Admin::SincronizacionesHelper::CANTIDADES.each_key do |campo| %>
+      <% cantidad = @sincronizacion.public_send(campo) %>
       <div class="col">
-        <div class="card text-center h-100">
-          <div class="card-body">
-            <div class="display-6"><%= cantidad %></div>
-            <div class="text-body-secondary"><%= titulo %></div>
-          </div>
+        <div class="border rounded-3 px-3 py-2 h-100">
+          <div class="fs-3 fw-semibold <%= color_de_cantidad(campo, cantidad) %>"><%= cantidad %></div>
+          <div class="small text-body-secondary"><%= campo.to_s.capitalize %></div>
         </div>
       </div>
     <% end %>
   </div>
 
   <% if @sincronizacion.detalle_rechazados.any? %>
-    <h2 class="h5">Crípticos rechazados</h2>
+    <h2 class="h6 text-uppercase text-body-secondary">Crípticos rechazados</h2>
     <div class="table-responsive">
-      <table class="table table-sm">
-        <thead>
-          <tr><th>Id</th><th>Motivo</th></tr>
+      <table class="table table-sm align-middle">
+        <thead class="small text-body-secondary">
+          <tr><th class="fw-normal">Id</th><th class="fw-normal">Motivo</th></tr>
         </thead>
         <tbody>
           <% @sincronizacion.detalle_rechazados.each do |rechazo| %>

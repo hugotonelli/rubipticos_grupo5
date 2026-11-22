@@ -12,6 +12,7 @@ class Admin::SincronizacionesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "button", "Sincronizar ahora"
     assert_select "td", "2026-10-19.1"
+    assert_select "td .badge", "34 creados"
   end
 
   test "el editor de puntajes no puede entrar aunque escriba la URL" do
