@@ -3,6 +3,9 @@ class Criptico < ApplicationRecord
   # Ejemplo: en cr-021 el material es "álbum, casa y amor" y la respuesta es MAR (álbuM, casA, amoR).
   PALABRAS_DE_UNION = %w[Y E O U NI].freeze
 
+  # De qué fuente vino: los de la cátedra usan ids "cr-..."; los propios, otro prefijo (por ejemplo "g5-").
+  ORIGENES = %w[catedra propio].freeze
+
   # Tipo y dificultad son tablas propias porque sus puntos y multiplicadores se editan desde el backend.
   belongs_to :tipo
   belongs_to :dificultad
@@ -10,6 +13,8 @@ class Criptico < ApplicationRecord
   has_many :partidas, dependent: :restrict_with_error
 
   scope :activos, -> { where(activo: true) }
+
+  validates :origen, inclusion: { in: ORIGENES }
 
   # `enunciado`, `respuesta`, `tipo` y `dificultad` son obligatorios.
   validates :enunciado, :respuesta, :tipo, :dificultad, presence: true
