@@ -35,6 +35,9 @@ end
   end
 end
 
+# Configuración general (URL de la API de la cátedra y texto de bienvenida).
+Configuracion.actual
+
 # Admin de prueba (las credenciales están en el README).
 User.find_or_create_by!(email_address: "admin@rubipticos.com") do |user|
   user.password = "rubipticos"

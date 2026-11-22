@@ -15,6 +15,15 @@ es:
       user:
         one: Usuario
         other: Usuarios
+      configuracion:
+        one: Configuración
+        other: Configuraciones
+      jugador:
+        one: Jugador
+        other: Jugadores
+      partida:
+        one: Partida
+        other: Partidas
     attributes:
       criptico:
         id_fuente: Id en la fuente
@@ -41,3 +50,23 @@ es:
       user:
         email_address: Email
         password: Contraseña
+        rol: Rol
+        activo: Activo
+      configuracion:
+        url_fuente: URL de la fuente de crípticos
+        texto_bienvenida: Texto de bienvenida
+      jugador:
+        nombre: Nombre
+        bloqueado: Bloqueado
+        racha_actual: Racha actual
+        mejor_racha: Mejor racha
+        ultimo_dia_jugado: Último día jugado
+      partida:
+        jugador: Jugador
+        criptico: Críptico
+        estado: Estado
+        iniciada_at: Inicio
+        finalizada_at: Fin
+        intentos: Intentos
+        pistas_usadas: Pistas usadas
+        puntos: Puntos
