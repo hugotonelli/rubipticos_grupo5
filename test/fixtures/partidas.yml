@@ -1,0 +1,9 @@
+pedrito_mora:
+  jugador: pedrito
+  criptico: mora
+  estado: <%= Partida.estados[:resuelta] %>
+  iniciada_at: <%= 2.minutes.ago %>
+  finalizada_at: <%= 1.minute.ago %>
+  intentos: 1
+  pistas_usadas: 0
+  puntos: 100
