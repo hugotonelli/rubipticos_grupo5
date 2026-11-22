@@ -81,6 +81,56 @@ bin/rails console       # probar modelos a mano
 bin/rails routes        # ver las rutas
 ```
 
+## Modelo de datos
+
+```
+┌───────────────┐       ┌──────────────────────┐       ┌───────────────┐
+│ tipos         │ 1   * │ cripticos            │ *   1 │ dificultades  │
+├───────────────┤───────├──────────────────────┤───────├───────────────┤
+│ nombre  único │       │ id_fuente     único  │       │ nombre  único │
+│ puntos 10-1000│       │ enunciado, respuesta │       │ multiplicador │
+│ descripcion   │       │ enumeracion          │       │   (0, 5]      │
+└───────────────┘       │ definiciones (JSON)  │       │ tiempo (seg)  │
+                        │ indicadores  (JSON)  │       └───────────────┘
+                        │ materiales   (JSON)  │
+                        │ ayuda, explicacion   │
+                        │ autor, activo        │
+                        └──────────┬───────────┘
+                                   │ 1
+                                   │ *
+┌──────────────────────┐ 1    * ┌──┴───────────────────────────┐
+│ jugadores            │────────│ partidas                     │
+├──────────────────────┤        ├──────────────────────────────┤
+│ nombre (3-20, único  │        │ estado: en_curso / resuelta /│
+│   sin mayúsculas)    │        │   rendida                    │
+│ token  único         │        │ iniciada_at, finalizada_at   │
+│ bloqueado            │        │ intentos (0-5)               │
+│ racha_actual         │        │ pistas_usadas (0-4)          │
+│ mejor_racha          │        │ puntos                       │
+│ ultimo_dia_jugado    │        │ UNIQUE(jugador, criptico)    │
+└──────────────────────┘        └──────────────────────────────┘
+
+users (backend): email único, rol (administrador / editor_puntajes), activo
+configuraciones (una fila): url_fuente, texto_bienvenida
+```
+
+### Validaciones
+
+Se validan en **dos lugares**: en la base (migraciones) y en el modelo.
+
+| Regla | Base de datos | Modelo |
+| --- | --- | --- |
+| Críptico: enunciado, respuesta, tipo y dificultad obligatorios | `null: false` + claves foráneas | `presence` + `belongs_to` |
+| Críptico: id de la fuente único | índice único | `uniqueness` |
+| Críptico: enumeración = largo de la respuesta sin tildes ni espacios | — | `validate` con `NormalizadorDeTexto` |
+| Tipo y dificultad: solo los valores del enunciado, nombre único | índice único | `inclusion` + `uniqueness` |
+| Tipo: puntos enteros entre 10 y 1000 | check constraint | `numericality` |
+| Dificultad: multiplicador mayor que 0 y hasta 5 | check constraint | `numericality` |
+| Jugador: nombre de 3 a 20, único sin distinguir mayúsculas | check + índice único sobre `lower(nombre)` | `length` + `uniqueness(case_sensitive: false)` |
+| Partida: un críptico por jugador | índice único | `uniqueness(scope:)` |
+| Partida: hasta 5 intentos y 4 pistas | check constraints | `numericality` |
+| Usuario: rol válido | check constraint | `enum ... validate: true` |
+
 ## Decisiones de diseño
 
 - **Modelos en castellano** (`Criptico`, `Tipo`, `Dificultad`). Como Rails pluraliza en inglés,
@@ -90,7 +140,15 @@ bin/rails routes        # ver las rutas
   `id_fuente` (único). Así las demás tablas los referencian con la convención de Rails.
   Los que ya no vienen en la fuente se desactivan (`activo`), no se borran.
 - **Tipo y dificultad** son tablas propias porque sus puntos y multiplicadores se editan desde
-  el backend. Sus nombres son los mismos que usa la API (`facil`, `doble_definicion`, ...).
+  el backend. Su `nombre` es el identificador que usa la API (`facil`, `doble_definicion`, ...)
+  y `to_s` devuelve el nombre para mostrar («Fácil», «Doble definición»).
+- **Configuración**: una sola fila (`Configuracion.actual`). Guarda la URL **completa** del
+  catálogo y no solo la base, para poder apuntar también a `cryptics_with_errors.json`.
+- **Jugadores**: sin cuenta; los identifica un token (`has_secure_token`) que va en una cookie
+  firmada. La racha se guarda en el jugador (`racha_actual`, `mejor_racha`, `ultimo_dia_jugado`)
+  y `racha_vigente` la da por cortada si no jugó ayer ni hoy.
+- **Partidas**: el tiempo oficial es `finalizada_at - iniciada_at`, medido en el servidor.
+  Los puntos se guardan al resolver, así un cambio de configuración no recalcula partidas viejas.
 - **Validaciones en dos niveles**: en el modelo (`validates`) y en la base (`null: false`,
   índices únicos, claves foráneas y check constraints).
 - **Lógica de negocio fuera de los controladores**: en los modelos y en servicios de
