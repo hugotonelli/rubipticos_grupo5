@@ -7,3 +7,8 @@ medio:
   nombre: medio
   multiplicador: 2
   tiempo: 180
+
+avanzado:
+  nombre: avanzado
+  multiplicador: 3
+  tiempo: 300
