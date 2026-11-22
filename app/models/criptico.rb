@@ -16,8 +16,9 @@ class Criptico < ApplicationRecord
 
   validates :origen, inclusion: { in: ORIGENES }
 
-  # `enunciado`, `respuesta`, `tipo` y `dificultad` son obligatorios.
-  validates :enunciado, :respuesta, :tipo, :dificultad, presence: true
+  # `enunciado`, `respuesta`, `tipo` y `dificultad` son obligatorios
+  # (tipo y dificultad ya los exige `belongs_to`).
+  validates :enunciado, :respuesta, presence: true
   # Identificador del críptico en la API de la cátedra: estable y nunca se reutiliza.
   validates :id_fuente, presence: true, uniqueness: true
 

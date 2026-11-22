@@ -156,4 +156,25 @@ class SincronizadorDeCripticosTest < ActiveSupport::TestCase
     la_fuente_devuelve(@catalogo)
     assert sincronizar.sin_cambios?
   end
+
+  test "un error inesperado queda registrado como fallida y no rompe la pantalla" do
+    la_fuente_devuelve(@catalogo)
+    sincronizador = SincronizadorDeCripticos.new(usuario: @admin, url: URL)
+    def sincronizador.procesar(_items) = raise(NoMethodError, "algo que no previmos")
+
+    sincronizacion = sincronizador.call
+
+    assert sincronizacion.fallida?
+    assert_match "Error inesperado", sincronizacion.mensaje
+    assert_equal 0, Criptico.where(id_fuente: "cr-013").count
+  end
+
+  test "si falta el tipo, el motivo lo dice una sola vez" do
+    sin_tipo = @catalogo["cripticos"].first.merge("tipo" => nil)
+    la_fuente_devuelve(con_version("sin-tipo", [ sin_tipo ]))
+
+    motivo = sincronizar.detalle_rechazados.first["motivo"]
+
+    assert_equal 1, motivo.scan("Tipo").size, motivo
+  end
 end

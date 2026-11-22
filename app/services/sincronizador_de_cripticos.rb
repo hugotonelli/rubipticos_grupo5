@@ -41,10 +41,11 @@ class SincronizadorDeCripticos
       registrar(:exitosa, version: version)
     end
   rescue ErrorDeFuente, ActiveRecord::ActiveRecordError => error
-    # La transacción ya deshizo cualquier cambio: se registra el fallo sin cantidades.
-    @conteo.transform_values! { 0 }
-    @rechazados = []
-    registrar(:fallida, mensaje: error.message)
+    fallar(error.message)
+  rescue StandardError => error
+    # Error no previsto: se reporta en el log para poder corregirlo, y el admin ve el informe de fallo.
+    Rails.error.report(error, handled: true, context: { url: @url })
+    fallar("Error inesperado al sincronizar (#{error.class}). Se registró en el log.")
   end
 
   private
@@ -157,6 +158,13 @@ class SincronizadorDeCripticos
     @conteo[:desactivados] = Criptico.activos.where.not(id_fuente: ids_en_la_fuente)
                                      .update_all(activo: false, desactivado_por_sincronizacion: true,
                                                  updated_at: Time.current)
+  end
+
+  # La transacción ya deshizo cualquier cambio: se registra el fallo sin cantidades.
+  def fallar(mensaje)
+    @conteo.transform_values! { 0 }
+    @rechazados = []
+    registrar(:fallida, mensaje: mensaje)
   end
 
   def registrar(estado, version: nil, mensaje: nil)
