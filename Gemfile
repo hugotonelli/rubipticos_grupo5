@@ -68,4 +68,7 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+
+  # Simula respuestas HTTP en los tests (la sincronización no depende de internet) [https://github.com/bblimke/webmock]
+  gem "webmock"
 end
