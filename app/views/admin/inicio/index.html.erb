@@ -1,0 +1,11 @@
+<% content_for :title, "Administración" %>
+
+<h1 class="h3 mb-3">Administración</h1>
+
+<p>
+  Ingresaste como <strong><%= Current.user.email_address %></strong>
+  (<%= Current.user.administrador? ? "administrador" : "editor de puntajes" %>).
+</p>
+
+<%# TODO: cada módulo suma acá el acceso a su sección (crípticos, sincronización, configuración, jugadores, usuarios). %>
+<p class="text-body-secondary">Las secciones del backend se van a ir agregando acá.</p>
