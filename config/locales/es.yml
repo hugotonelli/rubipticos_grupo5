@@ -24,6 +24,9 @@ es:
       partida:
         one: Partida
         other: Partidas
+      sincronizacion:
+        one: Sincronización
+        other: Sincronizaciones
     attributes:
       criptico:
         id_fuente: Id en la fuente
@@ -37,6 +40,7 @@ es:
         explicacion: Explicación
         autor: Autor
         activo: Activo
+        origen: Origen
         tipo: Tipo
         dificultad: Dificultad
       tipo:
@@ -70,3 +74,13 @@ es:
         intentos: Intentos
         pistas_usadas: Pistas usadas
         puntos: Puntos
+      sincronizacion:
+        user: Administrador
+        url: URL
+        version: Versión
+        estado: Estado
+        mensaje: Mensaje
+        creados: Creados
+        actualizados: Actualizados
+        desactivados: Desactivados
+        rechazados: Rechazados

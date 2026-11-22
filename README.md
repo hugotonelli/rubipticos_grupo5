@@ -112,6 +112,8 @@ bin/rails routes        # ver las rutas
 
 users (backend): email único, rol (administrador / editor_puntajes), activo
 configuraciones (una fila): url_fuente, texto_bienvenida
+sincronizaciones: user, url, version, estado (exitosa / sin_cambios / fallida), mensaje,
+                  creados, actualizados, desactivados, rechazados, detalle_rechazados (JSON)
 ```
 
 ### Validaciones
@@ -139,6 +141,19 @@ Se validan en **dos lugares**: en la base (migraciones) y en el modelo.
 - **Crípticos**: `id` numérico propio; el identificador de la API de la cátedra se guarda en
   `id_fuente` (único). Así las demás tablas los referencian con la convención de Rails.
   Los que ya no vienen en la fuente se desactivan (`activo`), no se borran.
+- **Sincronización del catálogo** (`SincronizadorDeCripticos`, en `app/services`): GET por HTTP con
+  timeout de 10 s; si falla la red o el JSON, no toca nada y queda registrada como fallida. Si la
+  versión es la de la última sincronización exitosa, informa «Sin cambios». Procesa todo en una
+  transacción. Decisiones propias, porque el enunciado no las cubre:
+  - Un **id repetido** dentro del mismo catálogo se rechaza en todas sus apariciones (no se puede
+    saber cuál es la correcta). Pasa en `cryptics_with_errors.json` con `cr-101`.
+  - **Origen** de un críptico: `catedra` si su id empieza con `cr-`, `propio` si no (el README de
+    la API pide usar un prefijo propio para los crípticos agregados en un fork). Se guarda al sincronizar.
+  - Un críptico **desactivado por el sincronizador** (porque ya no venía) se reactiva si vuelve a
+    aparecer; uno desactivado por un administrador queda desactivado.
+  - En iniciales y finales se ignoran la puntuación y las palabras de unión (y, e, o, u, ni): en el
+    catálogo real, cr-021 tiene material «álbum, casa y amor» y respuesta MAR.
+  - `db:seed` sincroniza con la API, así que `db:setup` necesita conexión a internet.
 - **Tipo y dificultad** son tablas propias porque sus puntos y multiplicadores se editan desde
   el backend. Su `nombre` es el identificador que usa la API (`facil`, `doble_definicion`, ...)
   y `to_s` devuelve el nombre para mostrar («Fácil», «Doble definición»).
