@@ -1,7 +1,17 @@
 require "test_helper"
 
 class TipoTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "los puntos deben ser un entero entre 10 y 1000" do
+    tipo = tipos(:anagrama)
+    [ 9, 1001, 50.5 ].each do |puntos|
+      tipo.puntos = puntos
+      assert_not tipo.valid?, "#{puntos} no debería ser válido"
+    end
+    tipo.puntos = 10
+    assert tipo.valid?
+  end
+
+  test "el nombre es único" do
+    assert_not Tipo.new(tipo: "anagrama", puntos: 100).valid?
+  end
 end

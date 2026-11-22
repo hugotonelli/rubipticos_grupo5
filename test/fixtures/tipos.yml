@@ -1,11 +1,9 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+anagrama:
+  tipo: anagrama
+  descripcion: Reordenar las letras del material.
+  puntos: 100
 
-one:
-  tipo: MyString
-  descripcion: MyText
-  puntos: 1
-
-two:
-  tipo: MyString
-  descripcion: MyText
-  puntos: 1
+contenedor:
+  tipo: contenedor
+  descripcion: Una pieza va dentro de otra.
+  puntos: 100

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_11_072827) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_000413) do
   create_table "cripticos", id: :string, force: :cascade do |t|
     t.string "version"
     t.text "enunciado", null: false
@@ -26,16 +26,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_11_072827) do
     t.integer "dificultad_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "activo", default: true, null: false
+    t.index ["activo"], name: "index_cripticos_on_activo"
     t.index ["dificultad_id"], name: "index_cripticos_on_dificultad_id"
     t.index ["tipo_id"], name: "index_cripticos_on_tipo_id"
   end
 
   create_table "dificultades", force: :cascade do |t|
     t.string "dificultad", null: false
-    t.integer "multiplicador", default: 1, null: false
+    t.decimal "multiplicador", precision: 3, scale: 2, default: "1.0", null: false
     t.integer "tiempo", default: 60, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["dificultad"], name: "index_dificultades_on_dificultad", unique: true
+    t.check_constraint "multiplicador > 0 AND multiplicador <= 5", name: "dificultades_multiplicador_en_rango"
+    t.check_constraint "tiempo > 0", name: "dificultades_tiempo_positivo"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -49,10 +54,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_11_072827) do
 
   create_table "tipos", force: :cascade do |t|
     t.string "tipo", null: false
-    t.integer "puntos", default: 1, null: false
+    t.integer "puntos", default: 100, null: false
     t.text "descripcion"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["tipo"], name: "index_tipos_on_tipo", unique: true
+    t.check_constraint "puntos BETWEEN 10 AND 1000", name: "tipos_puntos_en_rango"
   end
 
   create_table "users", force: :cascade do |t|
