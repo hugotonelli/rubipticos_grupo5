@@ -31,11 +31,11 @@ es:
         tipo: Tipo
         dificultad: Dificultad
       tipo:
-        tipo: Nombre
+        nombre: Nombre
         puntos: Puntos
         descripcion: Descripción
       dificultad:
-        dificultad: Nombre
+        nombre: Nombre
         multiplicador: Multiplicador
         tiempo: Tiempo de referencia (segundos)
       user:

@@ -1,9 +1,9 @@
 anagrama:
-  tipo: anagrama
+  nombre: anagrama
   descripcion: Reordenar las letras del material.
   puntos: 100
 
 contenedor:
-  tipo: contenedor
+  nombre: contenedor
   descripcion: Una pieza va dentro de otra.
   puntos: 100

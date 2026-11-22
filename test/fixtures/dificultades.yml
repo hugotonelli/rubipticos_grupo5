@@ -1,9 +1,9 @@
 facil:
-  dificultad: facil
+  nombre: facil
   multiplicador: 1
   tiempo: 60
 
 medio:
-  dificultad: medio
+  nombre: medio
   multiplicador: 2
   tiempo: 180

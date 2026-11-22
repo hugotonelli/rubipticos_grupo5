@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_22_001604) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_002505) do
   create_table "cripticos", force: :cascade do |t|
     t.string "id_fuente", null: false
     t.text "enunciado", null: false
@@ -34,12 +34,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_001604) do
   end
 
   create_table "dificultades", force: :cascade do |t|
-    t.string "dificultad", null: false
+    t.string "nombre", null: false
     t.decimal "multiplicador", precision: 3, scale: 2, default: "1.0", null: false
     t.integer "tiempo", default: 60, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["dificultad"], name: "index_dificultades_on_dificultad", unique: true
+    t.index ["nombre"], name: "index_dificultades_on_nombre", unique: true
     t.check_constraint "multiplicador > 0 AND multiplicador <= 5", name: "dificultades_multiplicador_en_rango"
     t.check_constraint "tiempo > 0", name: "dificultades_tiempo_positivo"
   end
@@ -54,12 +54,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_001604) do
   end
 
   create_table "tipos", force: :cascade do |t|
-    t.string "tipo", null: false
+    t.string "nombre", null: false
     t.integer "puntos", default: 100, null: false
     t.text "descripcion"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["tipo"], name: "index_tipos_on_tipo", unique: true
+    t.index ["nombre"], name: "index_tipos_on_nombre", unique: true
     t.check_constraint "puntos BETWEEN 10 AND 1000", name: "tipos_puntos_en_rango"
   end
 

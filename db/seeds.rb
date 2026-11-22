@@ -5,31 +5,31 @@
 # (sin tildes: "facil", "inversion", ...), porque el sincronizador los busca por ese valor.
 
 [
-  { dificultad: "facil", multiplicador: 1, tiempo: 60 },
-  { dificultad: "medio", multiplicador: 2, tiempo: 180 },
-  { dificultad: "avanzado", multiplicador: 3, tiempo: 300 }
+  { nombre: "facil", multiplicador: 1, tiempo: 60 },
+  { nombre: "medio", multiplicador: 2, tiempo: 180 },
+  { nombre: "avanzado", multiplicador: 3, tiempo: 300 }
 ].each do |atributos|
-  Dificultad.find_or_create_by!(dificultad: atributos[:dificultad]) do |dificultad|
+  Dificultad.find_or_create_by!(nombre: atributos[:nombre]) do |dificultad|
     dificultad.assign_attributes(atributos)
   end
 end
 
 [
-  { tipo: "anagrama", descripcion: "Reordenar las letras del material." },
-  { tipo: "oculta", descripcion: "La respuesta está escrita de corrido dentro del material." },
-  { tipo: "charada", descripcion: "Se pegan piezas una detrás de otra." },
-  { tipo: "contenedor", descripcion: "Una pieza va dentro de otra." },
-  { tipo: "inversion", descripcion: "El material se lee al revés." },
-  { tipo: "supresion", descripcion: "Se quita una letra del principio, del final o del medio." },
-  { tipo: "homofono", descripcion: "Una palabra que suena igual a otra. En castellano: h muda, b/v, s/c/z, ll/y." },
-  { tipo: "doble_definicion", descripcion: "Dos definiciones de la misma palabra. No hay indicador ni material." },
-  { tipo: "iniciales", descripcion: "Las primeras letras de palabras seguidas." },
-  { tipo: "finales", descripcion: "Las últimas letras de palabras seguidas." },
-  { tipo: "sustitucion", descripcion: "Se cambia una letra por otra." },
-  { tipo: "simbolos", descripcion: "Abreviaturas convencionales: números romanos, puntos cardinales, elementos químicos, notas musicales." },
-  { tipo: "combinada", descripcion: "Dos o más operaciones en el mismo enunciado." }
+  { nombre: "anagrama", descripcion: "Reordenar las letras del material." },
+  { nombre: "oculta", descripcion: "La respuesta está escrita de corrido dentro del material." },
+  { nombre: "charada", descripcion: "Se pegan piezas una detrás de otra." },
+  { nombre: "contenedor", descripcion: "Una pieza va dentro de otra." },
+  { nombre: "inversion", descripcion: "El material se lee al revés." },
+  { nombre: "supresion", descripcion: "Se quita una letra del principio, del final o del medio." },
+  { nombre: "homofono", descripcion: "Una palabra que suena igual a otra. En castellano: h muda, b/v, s/c/z, ll/y." },
+  { nombre: "doble_definicion", descripcion: "Dos definiciones de la misma palabra. No hay indicador ni material." },
+  { nombre: "iniciales", descripcion: "Las primeras letras de palabras seguidas." },
+  { nombre: "finales", descripcion: "Las últimas letras de palabras seguidas." },
+  { nombre: "sustitucion", descripcion: "Se cambia una letra por otra." },
+  { nombre: "simbolos", descripcion: "Abreviaturas convencionales: números romanos, puntos cardinales, elementos químicos, notas musicales." },
+  { nombre: "combinada", descripcion: "Dos o más operaciones en el mismo enunciado." }
 ].each do |atributos|
-  Tipo.find_or_create_by!(tipo: atributos[:tipo]) do |tipo|
+  Tipo.find_or_create_by!(nombre: atributos[:nombre]) do |tipo|
     tipo.descripcion = atributos[:descripcion]
     tipo.puntos = 100
   end
@@ -50,8 +50,8 @@ Criptico.find_or_create_by!(id_fuente: "cr-013") do |criptico|
     definiciones: [ "una prenda" ],
     indicadores: [ "metido en" ],
     materiales: [ "Mi", "el hogar" ],
-    tipo: Tipo.find_by!(tipo: "contenedor"),
-    dificultad: Dificultad.find_by!(dificultad: "medio"),
+    tipo: Tipo.find_by!(nombre: "contenedor"),
+    dificultad: Dificultad.find_by!(nombre: "medio"),
     ayuda: "El hogar es una palabra de cuatro letras. Partila al medio y meté MI.",
     explicacion: "MI dentro de CASA (el hogar): CA + MI + SA = CAMISA.",
     autor: "Cátedra"

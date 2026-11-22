@@ -12,6 +12,14 @@ class TipoTest < ActiveSupport::TestCase
   end
 
   test "el nombre es único" do
-    assert_not Tipo.new(tipo: "anagrama", puntos: 100).valid?
+    assert_not Tipo.new(nombre: "anagrama", puntos: 100).valid?
+  end
+
+  test "solo acepta los tipos definidos en el enunciado" do
+    assert_not Tipo.new(nombre: "palindromo", puntos: 100).valid?
+  end
+
+  test "se muestra con su nombre en castellano" do
+    assert_equal "Doble definición", Tipo.new(nombre: "doble_definicion").to_s
   end
 end
