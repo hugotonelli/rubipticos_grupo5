@@ -10,25 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_22_000413) do
-  create_table "cripticos", id: :string, force: :cascade do |t|
-    t.string "version"
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_001335) do
+  create_table "cripticos", force: :cascade do |t|
+    t.string "id_fuente", null: false
     t.text "enunciado", null: false
     t.integer "enumeracion"
     t.string "respuesta", null: false
+    t.json "definiciones", default: [], null: false
+    t.json "indicadores", default: [], null: false
+    t.json "materiales", default: [], null: false
     t.text "ayuda"
     t.text "explicacion"
     t.string "autor"
-    t.json "definiciones"
-    t.json "indicadores"
-    t.json "materiales"
+    t.boolean "activo", default: true, null: false
     t.integer "tipo_id", null: false
     t.integer "dificultad_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "activo", default: true, null: false
     t.index ["activo"], name: "index_cripticos_on_activo"
     t.index ["dificultad_id"], name: "index_cripticos_on_dificultad_id"
+    t.index ["id_fuente"], name: "index_cripticos_on_id_fuente", unique: true
     t.index ["tipo_id"], name: "index_cripticos_on_tipo_id"
   end
 

@@ -41,9 +41,8 @@ User.find_or_create_by!(email_address: "admin@rubipticos.com") do |user|
 end
 
 # TODO: reemplazar por el SincronizadorDeCripticos (el enunciado pide que db:seed use el mismo sincronizador).
-Criptico.find_or_create_by!(id: "cr-013") do |criptico|
+Criptico.find_or_create_by!(id_fuente: "cr-013") do |criptico|
   criptico.assign_attributes(
-    version: "2026-10-19.1",
     enunciado: "Mi metido en el hogar da una prenda",
     enumeracion: 6,
     respuesta: "CAMISA",

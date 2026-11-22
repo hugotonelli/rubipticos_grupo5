@@ -1,6 +1,5 @@
 camisa:
-  id: cr-013
-  version: 2026-10-19.1
+  id_fuente: cr-013
   enunciado: Mi metido en el hogar da una prenda
   enumeracion: 6
   respuesta: CAMISA
@@ -14,8 +13,7 @@ camisa:
   autor: Cátedra
 
 mora:
-  id: cr-003
-  version: 2026-10-19.1
+  id_fuente: cr-003
   enunciado: Amor loco da una fruta del bosque
   enumeracion: 4
   respuesta: MORA

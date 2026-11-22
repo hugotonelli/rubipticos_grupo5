@@ -9,7 +9,7 @@ class CripticoTest < ActiveSupport::TestCase
     criptico = cripticos(:camisa)
     criptico.enumeracion = 7
     assert_not criptico.valid?
-    assert_includes criptico.errors[:enumeracion], "debe coincidir con el largo de la respuesta"
+    assert_includes criptico.errors.full_messages, "Enumeración debe coincidir con el largo de la respuesta"
   end
 
   test "la enumeración no cuenta tildes ni espacios" do
@@ -23,6 +23,12 @@ class CripticoTest < ActiveSupport::TestCase
     assert_not criptico.valid?
     assert criptico.errors[:enunciado].any?
     assert criptico.errors[:respuesta].any?
+  end
+
+  test "el id de la fuente es obligatorio y único" do
+    criptico = cripticos(:mora).dup
+    assert_not criptico.valid?
+    assert criptico.errors[:id_fuente].any?
   end
 
   test "es activo por defecto" do

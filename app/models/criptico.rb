@@ -7,6 +7,8 @@ class Criptico < ApplicationRecord
 
   # `enunciado`, `respuesta`, `tipo` y `dificultad` son obligatorios.
   validates :enunciado, :respuesta, :tipo, :dificultad, presence: true
+  # Identificador del críptico en la API de la cátedra: estable y nunca se reutiliza.
+  validates :id_fuente, presence: true, uniqueness: true
 
   # TODO: `tipo` y `dificultad` pertenecen a los valores definidos.
 
