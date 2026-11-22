@@ -1,0 +1,43 @@
+# Nombres de modelos y atributos en español, para los mensajes de validación y los formularios.
+# Las traducciones estándar de Rails (mensajes de error, fechas) las trae la gema rails-i18n.
+es:
+  activerecord:
+    models:
+      criptico:
+        one: Críptico
+        other: Crípticos
+      tipo:
+        one: Tipo
+        other: Tipos
+      dificultad:
+        one: Dificultad
+        other: Dificultades
+      user:
+        one: Usuario
+        other: Usuarios
+    attributes:
+      criptico:
+        id_fuente: Id en la fuente
+        enunciado: Enunciado
+        enumeracion: Enumeración
+        respuesta: Respuesta
+        definiciones: Definiciones
+        indicadores: Indicadores
+        materiales: Material
+        ayuda: Ayuda
+        explicacion: Explicación
+        autor: Autor
+        activo: Activo
+        tipo: Tipo
+        dificultad: Dificultad
+      tipo:
+        tipo: Nombre
+        puntos: Puntos
+        descripcion: Descripción
+      dificultad:
+        dificultad: Nombre
+        multiplicador: Multiplicador
+        tiempo: Tiempo de referencia (segundos)
+      user:
+        email_address: Email
+        password: Contraseña
