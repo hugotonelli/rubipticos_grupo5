@@ -10,32 +10,82 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_11_072827) do
-  create_table "cripticos", id: :string, force: :cascade do |t|
-    t.string "version"
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_002545) do
+  create_table "configuraciones", force: :cascade do |t|
+    t.string "url_fuente", null: false
+    t.text "texto_bienvenida", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "cripticos", force: :cascade do |t|
+    t.string "id_fuente", null: false
     t.text "enunciado", null: false
     t.integer "enumeracion"
     t.string "respuesta", null: false
+    t.json "definiciones", default: [], null: false
+    t.json "indicadores", default: [], null: false
+    t.json "materiales", default: [], null: false
     t.text "ayuda"
     t.text "explicacion"
     t.string "autor"
-    t.json "definiciones"
-    t.json "indicadores"
-    t.json "materiales"
+    t.boolean "activo", default: true, null: false
     t.integer "tipo_id", null: false
     t.integer "dificultad_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["activo"], name: "index_cripticos_on_activo"
     t.index ["dificultad_id"], name: "index_cripticos_on_dificultad_id"
+    t.index ["id_fuente"], name: "index_cripticos_on_id_fuente", unique: true
     t.index ["tipo_id"], name: "index_cripticos_on_tipo_id"
   end
 
   create_table "dificultades", force: :cascade do |t|
-    t.string "dificultad", null: false
-    t.integer "multiplicador", default: 1, null: false
+    t.string "nombre", null: false
+    t.decimal "multiplicador", precision: 3, scale: 2, default: "1.0", null: false
     t.integer "tiempo", default: 60, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["nombre"], name: "index_dificultades_on_nombre", unique: true
+    t.check_constraint "multiplicador > 0 AND multiplicador <= 5", name: "dificultades_multiplicador_en_rango"
+    t.check_constraint "tiempo > 0", name: "dificultades_tiempo_positivo"
+  end
+
+  create_table "jugadores", force: :cascade do |t|
+    t.string "nombre", null: false
+    t.string "token", null: false
+    t.boolean "bloqueado", default: false, null: false
+    t.integer "racha_actual", default: 0, null: false
+    t.integer "mejor_racha", default: 0, null: false
+    t.date "ultimo_dia_jugado"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "lower(nombre)", name: "index_jugadores_on_lower_nombre", unique: true
+    t.index ["token"], name: "index_jugadores_on_token", unique: true
+    t.check_constraint "length(nombre) BETWEEN 3 AND 20", name: "jugadores_nombre_largo"
+    t.check_constraint "racha_actual >= 0 AND mejor_racha >= racha_actual", name: "jugadores_rachas_validas"
+  end
+
+  create_table "partidas", force: :cascade do |t|
+    t.integer "jugador_id", null: false
+    t.integer "criptico_id", null: false
+    t.integer "estado", default: 0, null: false
+    t.datetime "iniciada_at", null: false
+    t.datetime "finalizada_at"
+    t.integer "intentos", default: 0, null: false
+    t.integer "pistas_usadas", default: 0, null: false
+    t.integer "puntos", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["criptico_id"], name: "index_partidas_on_criptico_id"
+    t.index ["estado", "finalizada_at"], name: "index_partidas_on_estado_and_finalizada_at"
+    t.index ["jugador_id", "criptico_id"], name: "index_partidas_on_jugador_id_and_criptico_id", unique: true
+    t.index ["jugador_id"], name: "index_partidas_on_jugador_id"
+    t.check_constraint "estado = 0 OR finalizada_at IS NOT NULL", name: "partidas_finalizada_tiene_fecha"
+    t.check_constraint "estado IN (0, 1, 2)", name: "partidas_estado_valido"
+    t.check_constraint "intentos BETWEEN 0 AND 5", name: "partidas_intentos_en_rango"
+    t.check_constraint "pistas_usadas BETWEEN 0 AND 4", name: "partidas_pistas_en_rango"
+    t.check_constraint "puntos >= 0", name: "partidas_puntos_no_negativos"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -48,11 +98,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_11_072827) do
   end
 
   create_table "tipos", force: :cascade do |t|
-    t.string "tipo", null: false
-    t.integer "puntos", default: 1, null: false
+    t.string "nombre", null: false
+    t.integer "puntos", default: 100, null: false
     t.text "descripcion"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["nombre"], name: "index_tipos_on_nombre", unique: true
+    t.check_constraint "puntos BETWEEN 10 AND 1000", name: "tipos_puntos_en_rango"
   end
 
   create_table "users", force: :cascade do |t|
@@ -60,10 +112,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_11_072827) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "rol", default: 0, null: false
+    t.boolean "activo", default: true, null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.check_constraint "rol IN (0, 1)", name: "users_rol_valido"
   end
 
   add_foreign_key "cripticos", "dificultades"
   add_foreign_key "cripticos", "tipos"
+  add_foreign_key "partidas", "cripticos"
+  add_foreign_key "partidas", "jugadores"
   add_foreign_key "sessions", "users"
 end

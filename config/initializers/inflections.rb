@@ -1,24 +1,22 @@
 # Be sure to restart your server when you modify this file.
 
-# Add new inflection rules using the following format. Inflections
-# are locale specific, and you may define rules for as many different
-# locales as you wish. All of these examples are active by default:
-# ActiveSupport::Inflector.inflections(:en) do |inflect|
-#   inflect.plural /^(ox)$/i, "\\1en"
-#   inflect.singular /^(ox)en/i, "\\1"
-#   inflect.irregular "person", "people"
-#   inflect.uncountable %w( fish sheep )
-# end
-
+# Rails pluraliza en inglés: sin estas reglas "jugador" daría la tabla "jugadors",
+# "sincronizacion" daría "sincronizacions" y "pista" se tomaría como plural latino ("pistum").
+#
+# IMPORTANTE: agregar la regla ANTES de generar un modelo nuevo, y comprobarla con
+#   bin/rails runner 'p "jugador".pluralize, "jugadores".singularize'
+#
+# Se usa irregular palabra por palabra (y no una regla general tipo "consonante + es")
+# porque una regla general rompería los nombres en inglés que genera Rails (users, sessions).
+#
 # Usa :en como locale porque `bin/rails g model` usa inglés por defecto y parece no poder cambiarse.
 ActiveSupport::Inflector.inflections(:en) do |inflect|
-    inflect.irregular "definicion", "definiciones"
-    inflect.irregular "dificultad", "dificultades"
-    inflect.irregular "indicador", "indicadores"
-    inflect.irregular "material", "materiales"
+  inflect.irregular "configuracion", "configuraciones"
+  inflect.irregular "definicion", "definiciones"
+  inflect.irregular "dificultad", "dificultades"
+  inflect.irregular "indicador", "indicadores"
+  inflect.irregular "jugador", "jugadores"
+  inflect.irregular "material", "materiales"
+  inflect.irregular "pista", "pistas"
+  inflect.irregular "sincronizacion", "sincronizaciones"
 end
-
-# These inflection rules are supported but not enabled by default:
-# ActiveSupport::Inflector.inflections(:en) do |inflect|
-#   inflect.acronym "RESTful"
-# end

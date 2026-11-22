@@ -21,7 +21,13 @@ module RubipticosGrupo5
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
-    # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Hora argentina: las rachas dependen del día, usar siempre Date.current / Time.current.
+    config.time_zone = "America/Argentina/Buenos_Aires"
+
+    # Interfaz en español (mensajes de validación vía la gema rails-i18n).
+    config.i18n.default_locale = :es
+    config.i18n.available_locales = [ :es ]
   end
 end

@@ -1,9 +1,19 @@
-<h1>Update your password</h1>
+<% content_for :title, "Nueva contraseña" %>
 
-<%= tag.div(flash[:alert], style: "color:red") if flash[:alert] %>
+<div class="row justify-content-center">
+  <div class="col-sm-10 col-md-6 col-lg-4">
+    <h1 class="h3 mb-3">Nueva contraseña</h1>
 
-<%= form_with url: password_path(params[:token]), method: :put do |form| %>
-  <%= form.password_field :password, required: true, autocomplete: "new-password", placeholder: "Enter new password", maxlength: 72 %><br>
-  <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", placeholder: "Repeat new password", maxlength: 72 %><br>
-  <%= form.submit "Save" %>
-<% end %>
+    <%= form_with url: password_path(params[:token]), method: :put do |form| %>
+      <div class="mb-3">
+        <%= form.label :password, "Contraseña nueva", class: "form-label" %>
+        <%= form.password_field :password, required: true, autocomplete: "new-password", maxlength: 72, class: "form-control" %>
+      </div>
+      <div class="mb-3">
+        <%= form.label :password_confirmation, "Repetir contraseña", class: "form-label" %>
+        <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", maxlength: 72, class: "form-control" %>
+      </div>
+      <%= form.submit "Guardar", class: "btn btn-danger w-100" %>
+    <% end %>
+  </div>
+</div>

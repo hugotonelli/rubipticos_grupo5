@@ -1,16 +1,19 @@
 Rails.application.routes.draw do
+  # Sitio público (jugadores, sin login).
+  root "inicio#index"
+  get "como-se-juega", to: "paginas#como_se_juega", as: :como_se_juega
+
+  # Login del backend (generado con bin/rails generate authentication).
   resource :session
   resources :passwords, param: :token
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Backend de administración: controladores en app/controllers/admin/,
+  # todos heredan de Admin::BaseController.
+  namespace :admin do
+    root "inicio#index"
+  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  # Defines the root path route ("/")
-  root "inicio#index"
 end

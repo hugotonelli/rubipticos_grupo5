@@ -1,7 +1,37 @@
 require "test_helper"
 
 class CripticoTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "el fixture es válido" do
+    assert cripticos(:camisa).valid?
+  end
+
+  test "la enumeración debe coincidir con el largo de la respuesta" do
+    criptico = cripticos(:camisa)
+    criptico.enumeracion = 7
+    assert_not criptico.valid?
+    assert_includes criptico.errors.full_messages, "Enumeración debe coincidir con el largo de la respuesta"
+  end
+
+  test "la enumeración no cuenta tildes ni espacios" do
+    criptico = cripticos(:mora)
+    criptico.respuesta = "MÓRA "
+    assert criptico.valid?
+  end
+
+  test "enunciado y respuesta son obligatorios" do
+    criptico = Criptico.new(tipo: tipos(:anagrama), dificultad: dificultades(:facil))
+    assert_not criptico.valid?
+    assert criptico.errors[:enunciado].any?
+    assert criptico.errors[:respuesta].any?
+  end
+
+  test "el id de la fuente es obligatorio y único" do
+    criptico = cripticos(:mora).dup
+    assert_not criptico.valid?
+    assert criptico.errors[:id_fuente].any?
+  end
+
+  test "es activo por defecto" do
+    assert Criptico.new.activo
+  end
 end

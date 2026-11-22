@@ -1,29 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
   <head>
-    <title><%= content_for(:title) || "Rubipticos Grupo5" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Rubipticos Grupo5">
-    <meta name="mobile-web-app-capable" content="yes">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-
-    <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
+    <title><%= [ content_for(:title), "Rubípticos" ].compact.join(" · ") %></title>
+    <%= render "layouts/shared/head" %>
   </head>
 
   <body>
-    <%= yield %>
+    <nav class="navbar navbar-expand-md navbar-dark bg-danger mb-4">
+      <div class="container">
+        <%= link_to "Rubípticos", root_path, class: "navbar-brand fw-bold" %>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu-principal"
+                aria-controls="menu-principal" aria-expanded="false" aria-label="Abrir menú">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menu-principal">
+          <ul class="navbar-nav ms-auto">
+            <%# TODO: enlazar cada sección cuando exista su controlador (módulos de juego y de ranking). %>
+            <li class="nav-item"><span class="nav-link disabled" aria-disabled="true">Jugar</span></li>
+            <li class="nav-item"><span class="nav-link disabled" aria-disabled="true">Mi racha</span></li>
+            <li class="nav-item"><span class="nav-link disabled" aria-disabled="true">Tabla de posiciones</span></li>
+            <li class="nav-item"><%= link_to "Cómo se juega", como_se_juega_path, class: "nav-link" %></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container">
+      <%= render "layouts/shared/flash" %>
+      <%= yield %>
+    </main>
   </body>
 </html>

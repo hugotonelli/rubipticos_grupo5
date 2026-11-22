@@ -1,4 +1,8 @@
-<div class="container py-5 text-center">
-  <h1>Rubípticos</h1>
-  <p class="lead">Crípticos en Ruby. Próximamente.</p>
+<% content_for :title, "Inicio" %>
+
+<div class="py-5 text-center">
+  <h1 class="display-5 fw-bold">Rubípticos</h1>
+  <p class="lead"><%= @configuracion.texto_bienvenida %></p>
+  <%# TODO: botón para jugar cuando exista el flujo de partida. %>
+  <%= link_to "Cómo se juega", como_se_juega_path, class: "btn btn-outline-danger" %>
 </div>

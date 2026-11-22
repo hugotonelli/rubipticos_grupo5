@@ -1,29 +1,27 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+camisa:
+  id_fuente: cr-013
+  enunciado: Mi metido en el hogar da una prenda
+  enumeracion: 6
+  respuesta: CAMISA
+  definiciones: ["una prenda"]
+  indicadores: ["metido en"]
+  materiales: ["Mi", "el hogar"]
+  tipo: contenedor
+  dificultad: medio
+  ayuda: El hogar es una palabra de cuatro letras. Partila al medio y meté MI.
+  explicacion: "MI dentro de CASA (el hogar): CA + MI + SA = CAMISA."
+  autor: Cátedra
 
-one:
-  version: MyString
-  enunciado: MyText
-  enumeracion: 1
-  respuesta: MyString
-  ayuda: MyText
-  explicacion: MyText
-  autor: MyString
-  definiciones: 
-  indicadores: 
-  materiales: 
-  tipo: one
-  dificultad: one
-
-two:
-  version: MyString
-  enunciado: MyText
-  enumeracion: 1
-  respuesta: MyString
-  ayuda: MyText
-  explicacion: MyText
-  autor: MyString
-  definiciones: 
-  indicadores: 
-  materiales: 
-  tipo: two
-  dificultad: two
+mora:
+  id_fuente: cr-003
+  enunciado: Amor loco da una fruta del bosque
+  enumeracion: 4
+  respuesta: MORA
+  definiciones: ["una fruta del bosque"]
+  indicadores: ["loco"]
+  materiales: ["Amor"]
+  tipo: anagrama
+  dificultad: facil
+  ayuda: Reordená las letras de la primera palabra.
+  explicacion: AMOR desordenado da MORA.
+  autor: Cátedra
