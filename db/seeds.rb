@@ -35,9 +35,10 @@ end
   end
 end
 
-# Admin de prueba. TODO: asignarle el rol de administrador cuando exista.
+# Admin de prueba (las credenciales están en el README).
 User.find_or_create_by!(email_address: "admin@rubipticos.com") do |user|
   user.password = "rubipticos"
+  user.rol = :administrador
 end
 
 # TODO: reemplazar por el SincronizadorDeCripticos (el enunciado pide que db:seed use el mismo sincronizador).
