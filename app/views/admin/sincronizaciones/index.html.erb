@@ -1,0 +1,57 @@
+<% content_for :title, "Sincronización" %>
+
+<h1 class="h3 mb-3">Sincronización del catálogo</h1>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <p class="mb-2">
+      Trae los crípticos de la fuente y los guarda en la base. Los que no vienen más se desactivan
+      y los inválidos se informan con su motivo.
+    </p>
+    <p class="small text-body-secondary mb-3 text-break">
+      Fuente: <code><%= @configuracion.url_fuente %></code>
+    </p>
+    <%= button_to "Sincronizar ahora", admin_sincronizaciones_path,
+                  class: "btn btn-danger",
+                  data: { turbo_submits_with: "Sincronizando…" } %>
+  </div>
+</div>
+
+<h2 class="h5">Historial</h2>
+
+<% if @sincronizaciones.empty? %>
+  <p class="text-body-secondary">Todavía no hay sincronizaciones.</p>
+<% else %>
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Administrador</th>
+          <th>Versión</th>
+          <th>Estado</th>
+          <th class="text-end">Creados</th>
+          <th class="text-end">Actualizados</th>
+          <th class="text-end">Desactivados</th>
+          <th class="text-end">Rechazados</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @sincronizaciones.each do |sincronizacion| %>
+          <tr>
+            <td class="text-nowrap"><%= l(sincronizacion.created_at, format: :short) %></td>
+            <td><%= sincronizacion.user.email_address %></td>
+            <td><%= sincronizacion.version || "—" %></td>
+            <td><%= badge_de_estado(sincronizacion) %></td>
+            <td class="text-end"><%= sincronizacion.creados %></td>
+            <td class="text-end"><%= sincronizacion.actualizados %></td>
+            <td class="text-end"><%= sincronizacion.desactivados %></td>
+            <td class="text-end"><%= sincronizacion.rechazados %></td>
+            <td><%= link_to "Ver informe", admin_sincronizacion_path(sincronizacion) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

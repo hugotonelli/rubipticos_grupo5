@@ -7,5 +7,12 @@
   (<%= Current.user.administrador? ? "administrador" : "editor de puntajes" %>).
 </p>
 
-<%# TODO: cada módulo suma acá el acceso a su sección (crípticos, sincronización, configuración, jugadores, usuarios). %>
-<p class="text-body-secondary">Las secciones del backend se van a ir agregando acá.</p>
+<%# TODO: cada módulo suma acá el acceso a su sección (crípticos, configuración, jugadores, usuarios). %>
+<div class="list-group">
+  <% if Current.user.administrador? %>
+    <%= link_to admin_sincronizaciones_path, class: "list-group-item list-group-item-action" do %>
+      <strong>Sincronización</strong>
+      <div class="small text-body-secondary">Traer el catálogo de crípticos desde la fuente y ver los informes.</div>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,53 @@
+<% content_for :title, "Informe de sincronización" %>
+
+<p><%= link_to "← Volver a sincronización", admin_sincronizaciones_path %></p>
+
+<h1 class="h3 mb-1">Informe de sincronización <%= badge_de_estado(@sincronizacion) %></h1>
+<p class="text-body-secondary">
+  <%= l(@sincronizacion.created_at, format: :long) %> · <%= @sincronizacion.user.email_address %>
+  <% if @sincronizacion.version %> · versión <%= @sincronizacion.version %><% end %>
+</p>
+<p class="small text-body-secondary text-break">Fuente: <code><%= @sincronizacion.url %></code></p>
+
+<% if @sincronizacion.fallida? %>
+  <div class="alert alert-danger">
+    <strong>No se tocó nada.</strong> <%= @sincronizacion.mensaje %>
+  </div>
+<% elsif @sincronizacion.sin_cambios? %>
+  <div class="alert alert-secondary">
+    Sin cambios: la versión de la fuente es la misma de la última sincronización exitosa.
+  </div>
+<% else %>
+  <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+    <% { "Creados" => @sincronizacion.creados, "Actualizados" => @sincronizacion.actualizados,
+         "Desactivados" => @sincronizacion.desactivados, "Rechazados" => @sincronizacion.rechazados }.each do |titulo, cantidad| %>
+      <div class="col">
+        <div class="card text-center h-100">
+          <div class="card-body">
+            <div class="display-6"><%= cantidad %></div>
+            <div class="text-body-secondary"><%= titulo %></div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @sincronizacion.detalle_rechazados.any? %>
+    <h2 class="h5">Crípticos rechazados</h2>
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead>
+          <tr><th>Id</th><th>Motivo</th></tr>
+        </thead>
+        <tbody>
+          <% @sincronizacion.detalle_rechazados.each do |rechazo| %>
+            <tr>
+              <td class="text-nowrap"><code><%= rechazo["id"] %></code></td>
+              <td><%= rechazo["motivo"] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+<% end %>
