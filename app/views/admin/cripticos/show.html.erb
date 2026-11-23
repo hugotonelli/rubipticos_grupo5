@@ -1,0 +1,49 @@
+<% content_for :title, "Críptico #{@criptico.id_fuente}" %>
+
+<p class="small mb-3">
+  <%= link_to admin_cripticos_path, class: "link-secondary text-decoration-none" do %>
+    <i class="bi bi-arrow-left"></i> Crípticos
+  <% end %>
+</p>
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+  <div>
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+      <h1 class="h3 mb-0"><%= @criptico.id_fuente %></h1>
+      <%= badge_de_activo(@criptico) %>
+    </div>
+    <p class="small text-body-secondary mb-0">
+      <%= @criptico.tipo %> · <%= @criptico.dificultad %> · <%= nombre_de_origen(@criptico.origen) %>
+      <% if @criptico.autor.present? %> · <%= @criptico.autor %><% end %>
+    </p>
+  </div>
+  <%= boton_activar_desactivar(@criptico, clase: "btn") %>
+</div>
+
+<p class="fs-4 mb-1">«<%= @criptico.enunciado %>» <span class="text-body-secondary"><%= @criptico.enumeracion %></span></p>
+<p class="mb-4">Respuesta: <strong><%= @criptico.respuesta %></strong></p>
+
+<div class="row row-cols-1 row-cols-md-3 g-2 mb-4">
+  <% { "Veces jugado" => @estadisticas[:jugadas],
+       "Resuelto" => porcentaje(@estadisticas[:porcentaje_resuelto]),
+       "Tiempo promedio" => duracion(@estadisticas[:tiempo_promedio]) }.each do |titulo, valor| %>
+    <div class="col">
+      <div class="border rounded-3 px-3 py-2 h-100">
+        <div class="fs-4 fw-semibold"><%= valor %></div>
+        <div class="small text-body-secondary"><%= titulo %></div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<dl class="row small">
+  <% { "Definiciones" => @criptico.definiciones, "Indicadores" => @criptico.indicadores,
+       "Material" => @criptico.materiales }.each do |titulo, fragmentos| %>
+    <dt class="col-sm-3 text-body-secondary fw-normal"><%= titulo %></dt>
+    <dd class="col-sm-9"><%= fragmentos.any? ? fragmentos.map { |f| "«#{f}»" }.join(", ") : "—" %></dd>
+  <% end %>
+  <dt class="col-sm-3 text-body-secondary fw-normal">Ayuda</dt>
+  <dd class="col-sm-9"><%= @criptico.ayuda.presence || "—" %></dd>
+  <dt class="col-sm-3 text-body-secondary fw-normal">Explicación</dt>
+  <dd class="col-sm-9"><%= @criptico.explicacion.presence || "—" %></dd>
+</dl>

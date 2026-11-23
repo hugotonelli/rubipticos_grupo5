@@ -18,6 +18,31 @@ class Partida < ApplicationRecord
 
   scope :finalizadas, -> { where.not(estado: :en_curso) }
 
+  SIN_ESTADISTICAS = { jugadas: 0, porcentaje_resuelto: nil, tiempo_promedio: nil }.freeze
+
+  # Estadísticas por críptico, con una consulta agrupada por dato (no una por críptico):
+  #   { criptico_id => { jugadas:, porcentaje_resuelto:, tiempo_promedio: } }
+  # - jugadas: todas las partidas (también las que siguen en curso).
+  # - porcentaje_resuelto: resueltas sobre terminadas (resueltas + rendidas); nil si ninguna terminó.
+  # - tiempo_promedio: segundos promedio de las resueltas; nil si no hay.
+  def self.estadisticas_por_criptico(criptico_ids)
+    partidas = where(criptico_id: criptico_ids).group(:criptico_id)
+    jugadas = partidas.count
+    resueltas = partidas.resuelta.count
+    terminadas = partidas.finalizadas.count
+    # julianday es la función de fechas de SQLite: la diferencia viene en días, × 86400 = segundos.
+    promedios = partidas.resuelta.average(Arel.sql("(julianday(finalizada_at) - julianday(iniciada_at)) * 86400"))
+
+    jugadas.to_h do |criptico_id, cantidad|
+      total_terminadas = terminadas.fetch(criptico_id, 0)
+      [ criptico_id, {
+        jugadas: cantidad,
+        porcentaje_resuelto: total_terminadas.positive? ? (resueltas.fetch(criptico_id, 0) * 100.0 / total_terminadas).round : nil,
+        tiempo_promedio: promedios[criptico_id]&.round
+      } ]
+    end
+  end
+
   # Segundos que tardó, calculados con los timestamps del servidor (nil si sigue en curso).
   def segundos
     return if finalizada_at.nil?

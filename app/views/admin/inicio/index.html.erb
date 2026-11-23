@@ -7,9 +7,13 @@
   (<%= Current.user.administrador? ? "administrador" : "editor de puntajes" %>).
 </p>
 
-<%# TODO: cada módulo suma acá el acceso a su sección (crípticos, configuración, jugadores, usuarios). %>
+<%# TODO: cada módulo suma acá el acceso a su sección (configuración, jugadores, usuarios). %>
 <div class="list-group">
   <% if Current.user.administrador? %>
+    <%= link_to admin_cripticos_path, class: "list-group-item list-group-item-action" do %>
+      <strong>Crípticos</strong>
+      <div class="small text-body-secondary">Listado con filtros, estadísticas de juego y activar o desactivar.</div>
+    <% end %>
     <%= link_to admin_sincronizaciones_path, class: "list-group-item list-group-item-action" do %>
       <strong>Sincronización</strong>
       <div class="small text-body-secondary">Traer el catálogo de crípticos desde la fuente y ver los informes.</div>

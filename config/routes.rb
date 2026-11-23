@@ -13,6 +13,8 @@ Rails.application.routes.draw do
     root "inicio#index"
     # Historial, «Sincronizar ahora» (create) e informe de cada sincronización.
     resources :sincronizaciones, only: %i[index create show]
+    # Listado con filtros, detalle con estadísticas y activar/desactivar (update solo cambia `activo`).
+    resources :cripticos, only: %i[index show update]
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

@@ -79,6 +79,7 @@ bin/rubocop             # estilo (lo exige el CI)
 bin/brakeman            # análisis de seguridad
 bin/rails console       # probar modelos a mano
 bin/rails routes        # ver las rutas
+bin/rails cripticos:sincronizar  # sincronizar el catálogo desde la terminal (como el botón del backend)
 ```
 
 ## Modelo de datos
@@ -124,8 +125,9 @@ Se validan en **dos lugares**: en la base (migraciones) y en el modelo.
 | --- | --- | --- |
 | Críptico: enunciado, respuesta, tipo y dificultad obligatorios | `null: false` + claves foráneas | `presence` + `belongs_to` |
 | Críptico: id de la fuente único | índice único | `uniqueness` |
+| Críptico: enumeración obligatoria, con la forma `(6)` o `(3,4)` | `null: false` + check | `presence` + `format` |
 | Críptico: enumeración = largo de la respuesta sin tildes ni espacios | — | `validate` con `NormalizadorDeTexto` |
-| Tipo y dificultad: solo los valores del enunciado, nombre único | índice único | `inclusion` + `uniqueness` |
+| Tipo y dificultad: solo los valores del enunciado, nombre único | check constraint + índice único | `inclusion` + `uniqueness` |
 | Tipo: puntos enteros entre 10 y 1000 | check constraint | `numericality` |
 | Dificultad: multiplicador mayor que 0 y hasta 5 | check constraint | `numericality` |
 | Jugador: nombre de 3 a 20, único sin distinguir mayúsculas | check + índice único sobre `lower(nombre)` | `length` + `uniqueness(case_sensitive: false)` |
@@ -145,8 +147,13 @@ Se validan en **dos lugares**: en la base (migraciones) y en el modelo.
   timeout de 10 s; si falla la red o el JSON, no toca nada y queda registrada como fallida. Si la
   versión es la de la última sincronización exitosa, informa «Sin cambios». Procesa todo en una
   transacción. Decisiones propias, porque el enunciado no las cubre:
-  - Un **id repetido** dentro del mismo catálogo se rechaza en todas sus apariciones (no se puede
-    saber cuál es la correcta). Pasa en `cryptics_with_errors.json` con `cr-101`.
+  - Un **id repetido** dentro del mismo catálogo: se usa la primera aparición y se rechazan las
+    siguientes (el enunciado pide que los demás se procesen igual). Pasa en
+    `cryptics_with_errors.json` con `cr-101`.
+  - Un **catálogo vacío** se trata como error: procesarlo desactivaría todos los crípticos.
+  - Sigue hasta 3 **redirecciones** (por ejemplo, si se configura la URL con `http://`).
+  - La **enumeración** se guarda como texto, igual que en la API (`"(6)"`, o `"(3,4)"` si la
+    respuesta tiene varias palabras), y se valida que la suma coincida con el largo de la respuesta.
   - **Origen** de un críptico: `catedra` si su id empieza con `cr-`, `propio` si no (el README de
     la API pide usar un prefijo propio para los crípticos agregados en un fork). Se guarda al sincronizar.
   - Un críptico **desactivado por el sincronizador** (porque ya no venía) se reactiva si vuelve a
@@ -154,6 +161,12 @@ Se validan en **dos lugares**: en la base (migraciones) y en el modelo.
   - En iniciales y finales se ignoran la puntuación y las palabras de unión (y, e, o, u, ni): en el
     catálogo real, cr-021 tiene material «álbum, casa y amor» y respuesta MAR.
   - `db:seed` sincroniza con la API, así que `db:setup` necesita conexión a internet.
+- **Estadísticas de cada críptico** (backend): *veces jugado* cuenta todas las partidas;
+  *porcentaje resuelto* es resueltas sobre terminadas (resueltas + rendidas), sin contar las que
+  siguen en curso; *tiempo promedio* es el de las resueltas. Se calculan con consultas agrupadas
+  (`Partida.estadisticas_por_criptico`), no una por críptico.
+- **Activar o desactivar a mano** un críptico es decisión del administrador: el sincronizador no
+  lo reactiva aunque vuelva a venir en la fuente.
 - **Tipo y dificultad** son tablas propias porque sus puntos y multiplicadores se editan desde
   el backend. Su `nombre` es el identificador que usa la API (`facil`, `doble_definicion`, ...)
   y `to_s` devuelve el nombre para mostrar («Fácil», «Doble definición»).

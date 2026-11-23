@@ -1,0 +1,62 @@
+<% content_for :title, "Crípticos" %>
+
+<div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-3">
+  <h1 class="h3 mb-0">Crípticos</h1>
+  <span class="text-body-secondary small"><%= pluralize(@cripticos.size, "críptico", plural: "crípticos") %></span>
+</div>
+
+<%= form_with url: admin_cripticos_path, method: :get, class: "row g-2 mb-4",
+              data: { controller: "autoenvio", turbo_action: "replace" } do |form| %>
+  <% filtros = {
+       dificultad: [ "Todas las dificultades", Dificultad::NOMBRES.invert.to_a ],
+       tipo: [ "Todos los tipos", Tipo::NOMBRES.invert.to_a ],
+       estado: [ "Activos e inactivos", [ [ "Activos", "activos" ], [ "Inactivos", "inactivos" ] ] ],
+       origen: [ "Todos los orígenes", Admin::CripticosHelper::ORIGENES.invert.to_a ]
+     } %>
+  <% filtros.each do |campo, (todos, opciones)| %>
+    <div class="col-6 col-md-3">
+      <%= form.label campo, Criptico.human_attribute_name(campo), class: "visually-hidden" %>
+      <%= form.select campo, options_for_select(opciones, @filtros[campo]), { include_blank: todos },
+                      class: "form-select form-select-sm", data: { action: "autoenvio#enviar" } %>
+    </div>
+  <% end %>
+  <noscript><div class="col-12"><%= form.submit "Filtrar", class: "btn btn-sm btn-secondary" %></div></noscript>
+<% end %>
+
+<% if @cripticos.empty? %>
+  <p class="text-body-secondary">No hay crípticos con esos filtros.</p>
+<% else %>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="small text-body-secondary">
+        <tr>
+          <th class="fw-normal">Id</th>
+          <th class="fw-normal">Enunciado</th>
+          <th class="fw-normal d-none d-md-table-cell">Tipo</th>
+          <th class="fw-normal d-none d-md-table-cell">Dificultad</th>
+          <th class="fw-normal text-end d-none d-lg-table-cell">Jugado</th>
+          <th class="fw-normal text-end d-none d-lg-table-cell">Resuelto</th>
+          <th class="fw-normal text-end d-none d-lg-table-cell">Tiempo prom.</th>
+          <th class="fw-normal">Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @cripticos.each do |criptico| %>
+          <% estadisticas = @estadisticas.fetch(criptico.id, Partida::SIN_ESTADISTICAS) %>
+          <tr class="<%= "text-body-secondary" unless criptico.activo? %>">
+            <td class="text-nowrap"><%= link_to criptico.id_fuente, admin_criptico_path(criptico), class: "link-body-emphasis" %></td>
+            <td><%= criptico.enunciado %> <span class="text-body-secondary"><%= criptico.enumeracion %></span></td>
+            <td class="d-none d-md-table-cell small"><%= criptico.tipo %></td>
+            <td class="d-none d-md-table-cell small"><%= criptico.dificultad %></td>
+            <td class="text-end d-none d-lg-table-cell small"><%= estadisticas[:jugadas] %></td>
+            <td class="text-end d-none d-lg-table-cell small"><%= porcentaje(estadisticas[:porcentaje_resuelto]) %></td>
+            <td class="text-end d-none d-lg-table-cell small"><%= duracion(estadisticas[:tiempo_promedio]) %></td>
+            <td><%= badge_de_activo(criptico) %></td>
+            <td class="text-end"><%= boton_activar_desactivar(criptico) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

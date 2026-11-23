@@ -1,7 +1,7 @@
 camisa:
   id_fuente: prueba-013
   enunciado: Mi metido en el hogar da una prenda
-  enumeracion: 6
+  enumeracion: "(6)"
   respuesta: CAMISA
   definiciones: ["una prenda"]
   indicadores: ["metido en"]
@@ -15,7 +15,7 @@ camisa:
 mora:
   id_fuente: prueba-003
   enunciado: Amor loco da una fruta del bosque
-  enumeracion: 4
+  enumeracion: "(4)"
   respuesta: MORA
   definiciones: ["una fruta del bosque"]
   indicadores: ["loco"]
