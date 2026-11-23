@@ -13,8 +13,33 @@ class Criptico < ApplicationRecord
   has_many :partidas, dependent: :restrict_with_error
 
   scope :activos, -> { where(activo: true) }
+  scope :inactivos, -> { where(activo: false) }
+  scope :ordenados, -> { order(:id_fuente) }
 
   validates :origen, inclusion: { in: ORIGENES }
+
+  # Filtros del listado del backend (dificultad, tipo, estado y origen). Los vacíos se ignoran.
+  #   Criptico.filtrar(dificultad: "facil", estado: "activos")
+  def self.filtrar(dificultad: nil, tipo: nil, estado: nil, origen: nil)
+    cripticos = all
+    cripticos = cripticos.joins(:dificultad).where(dificultades: { nombre: dificultad }) if dificultad.present?
+    cripticos = cripticos.joins(:tipo).where(tipos: { nombre: tipo }) if tipo.present?
+    cripticos = cripticos.activos if estado == "activos"
+    cripticos = cripticos.inactivos if estado == "inactivos"
+    cripticos = cripticos.where(origen: origen) if origen.present?
+    cripticos
+  end
+
+  # Activar o desactivar a mano desde el backend. Como lo decide un administrador,
+  # el sincronizador ya no lo reactiva solo (ver SincronizadorDeCripticos).
+  def cambiar_activo(activo)
+    update(activo: activo, desactivado_por_sincronizacion: false)
+  end
+
+  # Estadísticas de juego de este críptico (ver Partida.estadisticas_por_criptico).
+  def estadisticas
+    Partida.estadisticas_por_criptico([ id ]).fetch(id, Partida::SIN_ESTADISTICAS)
+  end
 
   # `enunciado`, `respuesta`, `tipo` y `dificultad` son obligatorios
   # (tipo y dificultad ya los exige `belongs_to`).

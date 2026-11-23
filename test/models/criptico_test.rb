@@ -145,4 +145,24 @@ class CripticoTest < ActiveSupport::TestCase
     assert errores["cr-105"][:dificultad].any?, "cr-105: dificultad experto no existe"
     assert errores["cr-107"][:definiciones].any?, "cr-107: «una planta» no está en el enunciado"
   end
+
+  test "filtra por dificultad, tipo, estado y origen" do
+    cripticos(:camisa).update!(activo: false)
+
+    assert_equal [ cripticos(:mora) ], Criptico.filtrar(dificultad: "facil").to_a
+    assert_equal [ cripticos(:camisa) ], Criptico.filtrar(tipo: "contenedor").to_a
+    assert_equal [ cripticos(:camisa) ], Criptico.filtrar(estado: "inactivos").to_a
+    assert_equal [ cripticos(:mora) ], Criptico.filtrar(estado: "activos").to_a
+    assert_empty Criptico.filtrar(origen: "propio")
+    assert_equal 2, Criptico.filtrar(dificultad: "", tipo: nil).count
+  end
+
+  test "desactivarlo a mano evita que el sincronizador lo reactive" do
+    criptico = cripticos(:mora)
+    criptico.update!(activo: false, desactivado_por_sincronizacion: true)
+
+    criptico.cambiar_activo(false)
+
+    assert_not criptico.reload.desactivado_por_sincronizacion
+  end
 end
