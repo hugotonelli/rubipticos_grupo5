@@ -154,6 +154,12 @@ Se validan en **dos lugares**: en la base (migraciones) y en el modelo.
   - En iniciales y finales se ignoran la puntuación y las palabras de unión (y, e, o, u, ni): en el
     catálogo real, cr-021 tiene material «álbum, casa y amor» y respuesta MAR.
   - `db:seed` sincroniza con la API, así que `db:setup` necesita conexión a internet.
+- **Estadísticas de cada críptico** (backend): *veces jugado* cuenta todas las partidas;
+  *porcentaje resuelto* es resueltas sobre terminadas (resueltas + rendidas), sin contar las que
+  siguen en curso; *tiempo promedio* es el de las resueltas. Se calculan con consultas agrupadas
+  (`Partida.estadisticas_por_criptico`), no una por críptico.
+- **Activar o desactivar a mano** un críptico es decisión del administrador: el sincronizador no
+  lo reactiva aunque vuelva a venir en la fuente.
 - **Tipo y dificultad** son tablas propias porque sus puntos y multiplicadores se editan desde
   el backend. Su `nombre` es el identificador que usa la API (`facil`, `doble_definicion`, ...)
   y `to_s` devuelve el nombre para mostrar («Fácil», «Doble definición»).
