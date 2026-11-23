@@ -34,7 +34,7 @@ class SincronizadorDeCripticosTest < ActiveSupport::TestCase
     assert_equal @admin, sincronizacion.user
 
     camisa = Criptico.find_by!(id_fuente: "cr-013")
-    assert_equal 6, camisa.enumeracion
+    assert_equal "(6)", camisa.enumeracion
     assert_equal [ "Mi", "el hogar" ], camisa.materiales
     assert_equal "contenedor", camisa.tipo.nombre
     assert_equal "catedra", camisa.origen
@@ -94,8 +94,9 @@ class SincronizadorDeCripticosTest < ActiveSupport::TestCase
     motivos = sincronizacion.detalle_rechazados.to_h { |rechazo| [ rechazo["id"], rechazo["motivo"] ] }
 
     assert sincronizacion.exitosa?
-    assert_equal 0, sincronizacion.creados
-    assert_equal 7, sincronizacion.rechazados
+    assert_equal 1, sincronizacion.creados # la primera aparición de cr-101 (MORA) es válida
+    assert_equal 6, sincronizacion.rechazados
+    assert_equal "MORA", Criptico.find_by!(id_fuente: "cr-101").respuesta
     assert_match "repetido", motivos["cr-101"]
     assert_match "Enumeración", motivos["cr-102"]
     assert_match "mismas letras", motivos["cr-103"]
@@ -176,5 +177,38 @@ class SincronizadorDeCripticosTest < ActiveSupport::TestCase
     motivo = sincronizar.detalle_rechazados.first["motivo"]
 
     assert_equal 1, motivo.scan("Tipo").size, motivo
+  end
+
+  test "si el catálogo viene vacío, falla sin desactivar nada" do
+    la_fuente_devuelve(@catalogo)
+    sincronizar
+    la_fuente_devuelve(con_version("vacio", []))
+
+    assert_no_difference -> { Criptico.activos.count } do
+      assert sincronizar.fallida?
+    end
+  end
+
+  test "sigue una redirección de http a https" do
+    stub_request(:get, "http://ecorrons.github.io/cryptics-api/v1/cryptics.json")
+      .to_return(status: 301, headers: { "Location" => URL })
+    la_fuente_devuelve(@catalogo)
+
+    sincronizacion = SincronizadorDeCripticos.call(usuario: @admin, url: "http://ecorrons.github.io/cryptics-api/v1/cryptics.json")
+
+    assert sincronizacion.exitosa?, sincronizacion.mensaje
+  end
+
+  test "si la respuesta no es UTF-8, falla con un motivo claro" do
+    la_fuente_devuelve("{\"version\": \"\xFF\"}".b)
+
+    assert_match "UTF-8", sincronizar.mensaje
+  end
+
+  test "un críptico sin enumeración se rechaza" do
+    sin_enumeracion = @catalogo["cripticos"].first.merge("enumeracion" => nil)
+    la_fuente_devuelve(con_version("sin-enumeracion", [ sin_enumeracion ]))
+
+    assert_match "Enumeración", sincronizar.detalle_rechazados.first["motivo"]
   end
 end
