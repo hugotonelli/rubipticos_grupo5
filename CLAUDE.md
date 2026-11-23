@@ -73,8 +73,10 @@ El README tiene la instalación, el modelo de datos y las decisiones de diseño.
   Inválidos se saltean y se informan con id y motivo. Los que ya no vienen se **desactivan**, no se borran.
 - Registrar cada sincronización: fecha, admin, versión, creados, actualizados, desactivados, rechazados.
 - `db:seed` usa el mismo sincronizador. `bin/rails db:setup` tiene que dejar el sistema jugable con un admin.
-- En el JSON la clave es `material` (singular) y la enumeración viene como texto (`"(6)"`).
-- Trampas conocidas: en `cryptics_with_errors.json` hay un `id` repetido; en el catálogo real,
+- En el JSON la clave es `material` (singular) y la enumeración viene como texto (`"(6)"`);
+  se guarda igual, como texto (`Criptico#largo_enumeracion` da la suma).
+- Trampas conocidas: en `cryptics_with_errors.json` hay un `id` repetido (se usa la primera
+  aparición y se rechazan las siguientes); en el catálogo real,
   cr-021 (finales, MAR) tiene material «álbum, casa y amor»: hay que ignorar palabras de unión
   (y, e, o) al tomar iniciales o finales.
 - API: `https://ecorrons.github.io/cryptics-api/v1/cryptics.json` (también `version.json` y
