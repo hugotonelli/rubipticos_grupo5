@@ -18,6 +18,7 @@
             <%# Links a las secciones del backend. Los que son solo para administradores van dentro de
                 `if Current.user.administrador?` (y además Admin::BaseController los protege en el servidor). %>
             <% if Current.user.administrador? %>
+              <li class="nav-item"><%= link_to "Crípticos", admin_cripticos_path, class: "nav-link" %></li>
               <li class="nav-item"><%= link_to "Sincronización", admin_sincronizaciones_path, class: "nav-link" %></li>
             <% end %>
           </ul>
