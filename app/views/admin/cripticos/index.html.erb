@@ -46,7 +46,7 @@
           <% estadisticas = @estadisticas.fetch(criptico.id, Partida::SIN_ESTADISTICAS) %>
           <tr class="<%= "text-body-secondary" unless criptico.activo? %>">
             <td class="text-nowrap"><%= link_to criptico.id_fuente, admin_criptico_path(criptico), class: "link-body-emphasis" %></td>
-            <td><%= criptico.enunciado %> <span class="text-body-secondary">(<%= criptico.enumeracion %>)</span></td>
+            <td><%= criptico.enunciado %> <span class="text-body-secondary"><%= criptico.enumeracion %></span></td>
             <td class="d-none d-md-table-cell small"><%= criptico.tipo %></td>
             <td class="d-none d-md-table-cell small"><%= criptico.dificultad %></td>
             <td class="text-end d-none d-lg-table-cell small"><%= estadisticas[:jugadas] %></td>

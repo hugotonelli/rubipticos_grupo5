@@ -3,6 +3,9 @@ class Criptico < ApplicationRecord
   # Ejemplo: en cr-021 el material es "álbum, casa y amor" y la respuesta es MAR (álbuM, casA, amoR).
   PALABRAS_DE_UNION = %w[Y E O U NI].freeze
 
+  # Enumeración como viene en la API: "(6)", o "(3,4)" si la respuesta tiene varias palabras.
+  FORMATO_ENUMERACION = /\A\(\d+(,\d+)*\)\z/
+
   # De qué fuente vino: los de la cátedra usan ids "cr-..."; los propios, otro prefijo (por ejemplo "g5-").
   ORIGENES = %w[catedra propio].freeze
 
@@ -51,19 +54,26 @@ class Criptico < ApplicationRecord
   # y la validación `inclusion` de Tipo y Dificultad.
 
   # La enumeración coincide con el largo de la respuesta, sin contar tildes ni espacios.
-  validates :enumeracion, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
-  validate :coincide_enumeracion_y_largo_respuesta, if: -> { enumeracion.present? && respuesta.present? }
+  validates :enumeracion, presence: true,
+                          format: { with: FORMATO_ENUMERACION, message: "debe tener la forma (6) o (3,4)" }
+  validate :coincide_enumeracion_y_largo_respuesta,
+           if: -> { enumeracion.to_s.match?(FORMATO_ENUMERACION) && respuesta.present? }
 
-  # Cada definición, indicador y material aparece textualmente en el enunciado.
+  # Cada definición, indicador y material aparece textualmente en el enunciado (y no está vacío).
   validate :fragmentos_aparecen_en_el_enunciado, if: -> { enunciado.present? }
 
-  # La doble definición lleva 2 definiciones.
+  # La doble definición lleva 2 definiciones y no tiene indicador ni material (anexo de la API).
   validate :doble_definicion_tiene_dos_definiciones, if: -> { tipo_es?("doble_definicion") }
 
   # Las reglas que hacen que el sistema verifique el juego de palabras por sí mismo.
   validate :respuesta_oculta_en_el_material, if: -> { tipo_es?("oculta") && respuesta.present? }
   validate :material_es_anagrama_de_la_respuesta, if: -> { tipo_es?("anagrama") && respuesta.present? }
   validate :iniciales_o_finales_forman_la_respuesta, if: -> { tipo_es?("iniciales", "finales") && respuesta.present? }
+
+  # Cantidad total de letras de la enumeración: "(3,4)" => 7.
+  def largo_enumeracion
+    enumeracion.to_s.scan(/\d+/).sum(&:to_i)
+  end
 
   private
 
@@ -80,7 +90,7 @@ class Criptico < ApplicationRecord
   end
 
   def coincide_enumeracion_y_largo_respuesta
-    if enumeracion != respuesta_normalizada.length
+    if largo_enumeracion != respuesta_normalizada.length
       errors.add(:enumeracion, "debe coincidir con el largo de la respuesta")
     end
   end
@@ -88,7 +98,9 @@ class Criptico < ApplicationRecord
   def fragmentos_aparecen_en_el_enunciado
     { definiciones: definiciones, indicadores: indicadores, materiales: materiales }.each do |campo, fragmentos|
       Array(fragmentos).each do |fragmento|
-        unless enunciado.include?(fragmento.to_s)
+        if fragmento.to_s.strip.empty?
+          errors.add(campo, "no pueden tener fragmentos vacíos")
+        elsif !enunciado.include?(fragmento.to_s)
           errors.add(campo, "«#{fragmento}» no aparece textualmente en el enunciado")
         end
       end
@@ -99,11 +111,14 @@ class Criptico < ApplicationRecord
     if Array(definiciones).size != 2
       errors.add(:definiciones, "de una doble definición tienen que ser 2")
     end
+    errors.add(:indicadores, "tienen que estar vacíos en una doble definición") if Array(indicadores).any?
+    errors.add(:materiales, "tiene que estar vacío en una doble definición") if Array(materiales).any?
   end
 
-  # La respuesta está escrita de corrido dentro del material, sin contar espacios.
+  # La respuesta está escrita de corrido dentro de un fragmento del material, sin contar espacios.
   def respuesta_oculta_en_el_material
-    unless material_normalizado.include?(respuesta_normalizada)
+    fragmentos = Array(materiales).map { |fragmento| NormalizadorDeTexto.call(fragmento.to_s) }
+    unless fragmentos.any? { |fragmento| fragmento.include?(respuesta_normalizada) }
       errors.add(:respuesta, "no está oculta en el material")
     end
   end

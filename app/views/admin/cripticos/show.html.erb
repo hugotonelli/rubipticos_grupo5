@@ -20,7 +20,7 @@
   <%= boton_activar_desactivar(@criptico, clase: "btn") %>
 </div>
 
-<p class="fs-4 mb-1">«<%= @criptico.enunciado %>» <span class="text-body-secondary">(<%= @criptico.enumeracion %>)</span></p>
+<p class="fs-4 mb-1">«<%= @criptico.enunciado %>» <span class="text-body-secondary"><%= @criptico.enumeracion %></span></p>
 <p class="mb-4">Respuesta: <strong><%= @criptico.respuesta %></strong></p>
 
 <div class="row row-cols-1 row-cols-md-3 g-2 mb-4">

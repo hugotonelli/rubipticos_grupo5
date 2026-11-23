@@ -6,7 +6,7 @@ class CripticoTest < ActiveSupport::TestCase
     Criptico.new({
       id_fuente: "prueba-1",
       enunciado: "La cama tejida esconde la infusión argentina",
-      enumeracion: 4,
+      enumeracion: "(4)",
       respuesta: "MATE",
       definiciones: [ "la infusión argentina" ],
       indicadores: [ "esconde" ],
@@ -21,7 +21,7 @@ class CripticoTest < ActiveSupport::TestCase
     Criptico.new(
       id_fuente: datos["id"],
       enunciado: datos["enunciado"],
-      enumeracion: datos["enumeracion"].to_s[/\d+/],
+      enumeracion: datos["enumeracion"],
       respuesta: datos["respuesta"],
       definiciones: datos["definiciones"],
       indicadores: datos["indicadores"],
@@ -60,9 +60,26 @@ class CripticoTest < ActiveSupport::TestCase
   end
 
   test "la enumeración debe coincidir con el largo de la respuesta" do
-    invalido = criptico(enumeracion: 5)
+    invalido = criptico(enumeracion: "(5)")
     assert_not invalido.valid?
     assert_includes invalido.errors.full_messages, "Enumeración debe coincidir con el largo de la respuesta"
+  end
+
+  test "la enumeración es obligatoria y tiene la forma (6) o (3,4)" do
+    assert_not criptico(enumeracion: nil).valid?
+    assert_not criptico(enumeracion: "seis").valid?
+    assert_not criptico(enumeracion: "4").valid?
+  end
+
+  test "con varias palabras se suman los números de la enumeración" do
+    dos_palabras = criptico(respuesta: "MA TE", enumeracion: "(2,2)")
+    assert dos_palabras.valid?, dos_palabras.errors.full_messages.to_sentence
+    assert_equal 4, dos_palabras.largo_enumeracion
+  end
+
+  test "los fragmentos no pueden estar vacíos" do
+    assert_not criptico(definiciones: [ "" ]).valid?
+    assert_not criptico(materiales: [ " " ]).valid?
   end
 
   test "la enumeración no cuenta tildes ni espacios" do
@@ -84,11 +101,15 @@ class CripticoTest < ActiveSupport::TestCase
 
     doble.definiciones = [ "Felino", "herramienta para cambiar la rueda" ]
     assert doble.valid?
+
+    doble.indicadores = [ "o" ]
+    assert_not doble.valid?, "una doble definición no tiene indicador"
   end
 
   test "en una oculta la respuesta está dentro del material" do
     assert criptico.valid?
-    assert_not criptico(respuesta: "TEJA", enumeracion: 4, materiales: [ "La cama" ]).valid?
+    assert_not criptico(materiales: [ "cama", "tejida" ]).valid?, "no vale repartida entre dos fragmentos"
+    assert_not criptico(respuesta: "TEJA", materiales: [ "La cama" ]).valid?
   end
 
   test "en un anagrama el material tiene exactamente las mismas letras" do
@@ -105,7 +126,7 @@ class CripticoTest < ActiveSupport::TestCase
 
   test "en iniciales las primeras letras forman la respuesta" do
     iniciales = criptico(
-      enunciado: "Al principio, ocho sapos observan un animal peludo", enumeracion: 3, respuesta: "OSO",
+      enunciado: "Al principio, ocho sapos observan un animal peludo", enumeracion: "(3)", respuesta: "OSO",
       definiciones: [ "un animal peludo" ], indicadores: [ "Al principio" ], materiales: [ "ocho sapos observan" ],
       tipo: tipos(:iniciales)
     )
@@ -117,7 +138,7 @@ class CripticoTest < ActiveSupport::TestCase
 
   test "en finales se ignoran la puntuación y las palabras de unión" do
     finales = criptico(
-      enunciado: "Colas de álbum, casa y amor dan agua salada", enumeracion: 3, respuesta: "MAR",
+      enunciado: "Colas de álbum, casa y amor dan agua salada", enumeracion: "(3)", respuesta: "MAR",
       definiciones: [ "agua salada" ], indicadores: [ "Colas de" ], materiales: [ "álbum, casa y amor" ],
       tipo: tipos(:finales)
     )

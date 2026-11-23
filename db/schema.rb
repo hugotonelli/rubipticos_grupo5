@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_22_005227) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_143500) do
   create_table "configuraciones", force: :cascade do |t|
     t.string "url_fuente", null: false
     t.text "texto_bienvenida", default: "", null: false
@@ -21,7 +21,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_005227) do
   create_table "cripticos", force: :cascade do |t|
     t.string "id_fuente", null: false
     t.text "enunciado", null: false
-    t.integer "enumeracion"
+    t.string "enumeracion", null: false
     t.string "respuesta", null: false
     t.json "definiciones", default: [], null: false
     t.json "indicadores", default: [], null: false
@@ -41,6 +41,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_005227) do
     t.index ["id_fuente"], name: "index_cripticos_on_id_fuente", unique: true
     t.index ["origen"], name: "index_cripticos_on_origen"
     t.index ["tipo_id"], name: "index_cripticos_on_tipo_id"
+    t.check_constraint "enumeracion GLOB '(*)'", name: "cripticos_enumeracion_entre_parentesis"
     t.check_constraint "origen IN ('catedra', 'propio')", name: "cripticos_origen_valido"
   end
 
@@ -52,6 +53,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_005227) do
     t.datetime "updated_at", null: false
     t.index ["nombre"], name: "index_dificultades_on_nombre", unique: true
     t.check_constraint "multiplicador > 0 AND multiplicador <= 5", name: "dificultades_multiplicador_en_rango"
+    t.check_constraint "nombre IN ('facil', 'medio', 'avanzado')", name: "dificultades_nombre_valido"
     t.check_constraint "tiempo > 0", name: "dificultades_tiempo_positivo"
   end
 
@@ -117,6 +119,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_005227) do
     t.index ["estado", "created_at"], name: "index_sincronizaciones_on_estado_and_created_at"
     t.index ["user_id"], name: "index_sincronizaciones_on_user_id"
     t.check_constraint "creados >= 0 AND actualizados >= 0 AND desactivados >= 0 AND rechazados >= 0", name: "sincronizaciones_cantidades_no_negativas"
+    t.check_constraint "estado = 2 OR version IS NOT NULL", name: "sincronizaciones_version_si_no_fallo"
     t.check_constraint "estado IN (0, 1, 2)", name: "sincronizaciones_estado_valido"
   end
 
@@ -127,6 +130,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_005227) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["nombre"], name: "index_tipos_on_nombre", unique: true
+    t.check_constraint "nombre IN ('anagrama', 'oculta', 'charada', 'contenedor', 'inversion', 'supresion', 'homofono', 'doble_definicion', 'iniciales', 'finales', 'sustitucion', 'simbolos', 'combinada')", name: "tipos_nombre_valido"
     t.check_constraint "puntos BETWEEN 10 AND 1000", name: "tipos_puntos_en_rango"
   end
 
