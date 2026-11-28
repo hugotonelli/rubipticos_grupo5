@@ -4,7 +4,8 @@ class JugadoresController < ApplicationController
   allow_unauthenticated_access
 
   def new
-    return redirect_to new_partida_path if jugador_actual
+    # Ya tiene jugador: a jugar. Si está bloqueado, puede crear uno nuevo (reemplaza la cookie).
+    return redirect_to new_partida_path if jugador_actual && !jugador_actual.bloqueado?
 
     @jugador = Jugador.new
   end

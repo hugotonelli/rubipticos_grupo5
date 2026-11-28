@@ -62,4 +62,21 @@ class PartidasControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "un jugador bloqueado no puede jugar y puede crear uno nuevo" do
+    jugar_como jugadores(:bloqueado)
+
+    get new_partida_path
+    assert_redirected_to new_jugador_path
+    assert_match "bloqueado", flash[:alert]
+
+    follow_redirect!
+    assert_response :success
+    assert_select "h1", "Elegí tu nombre"
+
+    post jugador_path, params: { jugador: { nombre: "Arrepentido" } }
+    assert_redirected_to new_partida_path
+    follow_redirect!
+    assert_response :success
+  end
 end

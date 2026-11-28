@@ -3,6 +3,7 @@
 #
 # - jugador_actual: el Jugador de la cookie, o nil (también disponible en las vistas).
 # - requerir_jugador: before_action para las páginas que necesitan un jugador (por ejemplo, jugar).
+#   Un jugador bloqueado por nombre ofensivo no puede seguir: tiene que crear un jugador nuevo.
 # - recordar_jugador(jugador): guarda su token en la cookie.
 module JugadorActual
   extend ActiveSupport::Concern
@@ -24,6 +25,10 @@ module JugadorActual
   end
 
   def requerir_jugador
+    if jugador_actual&.bloqueado?
+      return redirect_to new_jugador_path,
+                         alert: "Tu nombre fue bloqueado por un administrador. Para seguir jugando, creá un jugador nuevo."
+    end
     return if jugador_actual
 
     # Para volver a donde estaba después de elegir el nombre (solo en pedidos de lectura).
