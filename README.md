@@ -145,8 +145,10 @@ Se validan en **dos lugares**: en la base (migraciones) y en el modelo.
   Los que ya no vienen en la fuente se desactivan (`activo`), no se borran.
 - **Sincronización del catálogo** (`SincronizadorDeCripticos`, en `app/services`): GET por HTTP con
   timeout de 10 s; si falla la red o el JSON, no toca nada y queda registrada como fallida. Si la
-  versión es la de la última sincronización exitosa, informa «Sin cambios». Procesa todo en una
-  transacción. Decisiones propias, porque el enunciado no las cubre:
+  versión **y la URL** son las de la última sincronización exitosa, informa «Sin cambios» (si se
+  cambia la URL a un fork o a un servidor local con la misma versión, se vuelve a sincronizar, como
+  sugirió la cátedra en el foro). Procesa todo en una transacción. Decisiones propias, porque el
+  enunciado no las cubre:
   - Un **id repetido** dentro del mismo catálogo: se usa la primera aparición y se rechazan las
     siguientes (el enunciado pide que los demás se procesen igual). Pasa en
     `cryptics_with_errors.json` con `cr-101`.
@@ -154,8 +156,9 @@ Se validan en **dos lugares**: en la base (migraciones) y en el modelo.
   - Sigue hasta 3 **redirecciones** (por ejemplo, si se configura la URL con `http://`).
   - La **enumeración** se guarda como texto, igual que en la API (`"(6)"`, o `"(3,4)"` si la
     respuesta tiene varias palabras), y se valida que la suma coincida con el largo de la respuesta.
-  - **Origen** de un críptico: `catedra` si su id empieza con `cr-`, `propio` si no (el README de
-    la API pide usar un prefijo propio para los crípticos agregados en un fork). Se guarda al sincronizar.
+  - **Origen** de un críptico: el host de la URL desde la que se sincronizó (la API de la cátedra,
+    un fork o un servidor local), como respondió la cátedra en el foro. Si el mismo id llega
+    después desde otra URL, se actualiza y su origen pasa a ser el nuevo.
   - Un críptico **desactivado por el sincronizador** (porque ya no venía) se reactiva si vuelve a
     aparecer; uno desactivado por un administrador queda desactivado.
   - En iniciales y finales se ignoran la puntuación y las palabras de unión (y, e, o, u, ni): en el
@@ -177,7 +180,9 @@ Se validan en **dos lugares**: en la base (migraciones) y en el modelo.
   y `racha_vigente` la da por cortada si no jugó ayer ni hoy.
 - **Jugador actual**: el concern `JugadorActual` (incluido en `ApplicationController`) lee el token
   de la cookie firmada `jugador_token` y da `jugador_actual` en controladores y vistas;
-  `before_action :requerir_jugador` manda a elegir nombre si todavía no tiene. Si el nombre está
+  `before_action :requerir_jugador` manda a elegir nombre si todavía no tiene. Un jugador
+  **bloqueado** (nombre ofensivo) no puede seguir jugando: tiene que crear un jugador nuevo, como
+  sugirió la cátedra. Si el nombre está
   tomado, `SugeridorDeNombre` propone una variante (`Pedrito_2`).
 - **Empezar a jugar** (`IniciadorDePartida`): el críptico se asigna al azar recién al apretar
   «Jugar» (entre los activos de esa dificultad que el jugador no jugó), así no se guarda nada en el

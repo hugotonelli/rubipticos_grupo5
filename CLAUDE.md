@@ -71,7 +71,8 @@ El README tiene la instalación, el modelo de datos y las decisiones de diseño.
 - Lógica en un servicio (`SincronizadorDeCripticos`), nunca en el controlador.
 - GET por HTTP a `Configuracion.actual.url_fuente`, timeout de 10 s. **Prohibido leer el JSON del disco.**
 - Si falla la red o el JSON no parsea, no se toca nada y se informa.
-- Si `version` coincide con la última sincronización exitosa: "Sin cambios".
+- Si `version` **y la URL** coinciden con la última sincronización exitosa: "Sin cambios"
+  (`Sincronizacion.ya_sincronizada?`). El origen de cada críptico es el host de la URL de la fuente.
 - Identificar por `id` de la fuente (`id_fuente`): crear si no existe, actualizar si cambió.
   Inválidos se saltean y se informan con id y motivo. Los que ya no vienen se **desactivan**, no se borran.
 - Registrar cada sincronización: fecha, admin, versión, creados, actualizados, desactivados, rechazados.
