@@ -7,7 +7,7 @@
   (<%= Current.user.administrador? ? "administrador" : "editor de puntajes" %>).
 </p>
 
-<%# TODO: cada módulo suma acá el acceso a su sección (configuración, jugadores, usuarios). %>
+<%# TODO: sumar acá el acceso a configuración, jugadores y usuarios. %>
 <div class="list-group">
   <% if Current.user.administrador? %>
     <%= link_to admin_cripticos_path, class: "list-group-item list-group-item-action" do %>

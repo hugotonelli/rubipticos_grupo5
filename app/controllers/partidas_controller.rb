@@ -3,7 +3,7 @@
 #   create → «Jugar»: asigna el críptico al azar y arranca el reloj (IniciadorDePartida)
 #   show   → la partida: enunciado y enumeración (nunca la respuesta antes de terminar)
 #
-# TODO (módulo de juego): intentos, pistas, rendirse y resolver.
+# TODO: intentos, pistas, rendirse y resolver.
 class PartidasController < ApplicationController
   allow_unauthenticated_access
   before_action :requerir_jugador

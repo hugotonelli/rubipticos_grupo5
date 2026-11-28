@@ -1,5 +1,5 @@
 # Elegir nombre de jugador (primera visita). Crea el jugador y guarda su token en la cookie firmada.
-# TODO (módulo de juego): cambiar el nombre (edit/update) y «empezar como otro jugador» (destroy de la cookie).
+# TODO: cambiar el nombre (edit/update) y «empezar como otro jugador» (destroy de la cookie).
 class JugadoresController < ApplicationController
   allow_unauthenticated_access
   # Si ya tiene un jugador, no se crea otro en silencio: «empezar como otro jugador» necesita un
