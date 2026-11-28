@@ -1,5 +1,6 @@
 pedrito:
   nombre: Pedrito
+  nombre_clave: pedrito
   token: token-de-pedrito
   racha_actual: 4
   mejor_racha: 6
@@ -7,5 +8,6 @@ pedrito:
 
 bloqueado:
   nombre: Ofensivo
+  nombre_clave: ofensivo
   token: token-de-ofensivo
   bloqueado: true

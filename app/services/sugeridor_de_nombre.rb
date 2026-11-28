@@ -18,7 +18,7 @@ class SugeridorDeNombre
     (2..).each do |numero|
       sufijo = "_#{numero}"
       candidato = "#{@nombre.first(LARGO_MAXIMO - sufijo.length)}#{sufijo}"
-      return candidato unless Jugador.where("lower(nombre) = ?", candidato.downcase).exists?
+      return candidato unless Jugador.nombre_tomado?(candidato)
     end
   end
 end

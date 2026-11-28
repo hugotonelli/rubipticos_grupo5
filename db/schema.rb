@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_28_141907) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_28_142602) do
   create_table "configuraciones", force: :cascade do |t|
     t.string "url_fuente", null: false
     t.text "texto_bienvenida", default: "", null: false
@@ -65,7 +65,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_28_141907) do
     t.date "ultimo_dia_jugado"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index "lower(nombre)", name: "index_jugadores_on_lower_nombre", unique: true
+    t.string "nombre_clave", null: false
+    t.index ["nombre_clave"], name: "index_jugadores_on_nombre_clave", unique: true
     t.index ["token"], name: "index_jugadores_on_token", unique: true
     t.check_constraint "length(nombre) BETWEEN 3 AND 20", name: "jugadores_nombre_largo"
     t.check_constraint "racha_actual >= 0 AND mejor_racha >= racha_actual", name: "jugadores_rachas_validas"

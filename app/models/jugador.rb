@@ -6,12 +6,31 @@ class Jugador < ApplicationRecord
 
   normalizes :nombre, with: ->(nombre) { nombre.strip }
 
-  # Entre 3 y 20 caracteres, único sin distinguir mayúsculas, sin espacios al principio ni al final
-  # (los saca `normalizes`).
-  validates :nombre, presence: true, length: { in: 3..20 }, uniqueness: { case_sensitive: false }
+  # El nombre en minúsculas (calculado en Ruby, que entiende Ñ y tildes): es lo que tiene que ser
+  # único, así «Ñandú» y «ñandú» cuentan como el mismo nombre. En la base tiene un índice único.
+  before_validation { self.nombre_clave = nombre.to_s.downcase }
+
+  # Entre 3 y 20 caracteres, sin espacios al principio ni al final (los saca `normalizes`)
+  # y único sin distinguir mayúsculas.
+  validates :nombre, presence: true, length: { in: 3..20 }
+  validate :nombre_disponible
 
   # Los bloqueados no aparecen en la tabla de posiciones.
   scope :visibles, -> { where(bloqueado: false) }
+
+  # ¿Hay otro jugador con este nombre (sin distinguir mayúsculas)?
+  def self.nombre_tomado?(nombre)
+    exists?(nombre_clave: nombre.to_s.strip.downcase)
+  end
+
+  # Como save, pero si otro pedido guardó el mismo nombre al mismo tiempo (y la base lo rechaza
+  # por el índice único), lo informa como un error de validación en lugar de romper.
+  def guardar
+    save
+  rescue ActiveRecord::RecordNotUnique
+    errors.add(:nombre, :taken)
+    false
+  end
 
   # La partida que dejó abierta (si cerró la pestaña, al volver la retoma).
   def partida_en_curso
@@ -23,5 +42,13 @@ class Jugador < ApplicationRecord
     return 0 if ultimo_dia_jugado.nil? || ultimo_dia_jugado < hoy - 1
 
     racha_actual
+  end
+
+  private
+
+  def nombre_disponible
+    otros = Jugador.where(nombre_clave: nombre_clave)
+    otros = otros.where.not(id: id) if persisted?
+    errors.add(:nombre, :taken) if nombre_clave.present? && otros.exists?
   end
 end

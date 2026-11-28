@@ -15,4 +15,11 @@ class SugeridorDeNombreTest < ActiveSupport::TestCase
     assert_equal 20, sugerencia.length
     assert sugerencia.end_with?("_2")
   end
+
+  test "no sugiere un nombre tomado aunque tenga Ñ o tildes en otras mayúsculas" do
+    Jugador.create!(nombre: "ÑANDÚ")
+    Jugador.create!(nombre: "ñandú_2")
+
+    assert_equal "ÑANDÚ_3", SugeridorDeNombre.call("ÑANDÚ")
+  end
 end
