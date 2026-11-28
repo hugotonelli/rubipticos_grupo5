@@ -13,6 +13,11 @@ class Jugador < ApplicationRecord
   # Los bloqueados no aparecen en la tabla de posiciones.
   scope :visibles, -> { where(bloqueado: false) }
 
+  # La partida que dejó abierta (si cerró la pestaña, al volver la retoma).
+  def partida_en_curso
+    partidas.en_curso.first
+  end
+
   # Racha que cuenta hoy: si el último día jugado fue antes de ayer, la racha se cortó.
   def racha_vigente(hoy = Date.current)
     return 0 if ultimo_dia_jugado.nil? || ultimo_dia_jugado < hoy - 1

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_23_143500) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_28_140843) do
   create_table "configuraciones", force: :cascade do |t|
     t.string "url_fuente", null: false
     t.text "texto_bienvenida", default: "", null: false
@@ -87,6 +87,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_143500) do
     t.index ["estado", "finalizada_at"], name: "index_partidas_on_estado_and_finalizada_at"
     t.index ["jugador_id", "criptico_id"], name: "index_partidas_on_jugador_id_and_criptico_id", unique: true
     t.index ["jugador_id"], name: "index_partidas_on_jugador_id"
+    t.index ["jugador_id"], name: "index_partidas_una_en_curso_por_jugador", unique: true, where: "estado = 0"
     t.check_constraint "estado = 0 OR finalizada_at IS NOT NULL", name: "partidas_finalizada_tiene_fecha"
     t.check_constraint "estado IN (0, 1, 2)", name: "partidas_estado_valido"
     t.check_constraint "intentos BETWEEN 0 AND 5", name: "partidas_intentos_en_rango"
