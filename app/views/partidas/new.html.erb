@@ -1,0 +1,36 @@
+<% content_for :title, "Jugar" %>
+
+<% if @dificultad %>
+  <%# Paso 2: el jugador ya eligió la dificultad y ve el botón Jugar. El reloj arranca al apretarlo. %>
+  <div class="text-center py-4">
+    <p class="text-body-secondary mb-1">Dificultad</p>
+    <h1 class="display-6 fw-bold mb-3"><%= @dificultad %></h1>
+    <p class="mb-4">
+      Te va a tocar un críptico al azar que todavía no jugaste.<br>
+      El cronómetro arranca cuando aprietes <strong>Jugar</strong>.
+    </p>
+    <%= button_to "Jugar", partidas_path, params: { dificultad: @dificultad.nombre },
+                  class: "btn btn-danger btn-lg px-5", data: { turbo_submits_with: "Preparando…" } %>
+    <p class="mt-3"><%= link_to "Elegir otra dificultad", new_partida_path, class: "link-secondary" %></p>
+  </div>
+<% else %>
+  <%# Paso 1: elegir dificultad. %>
+  <h1 class="h3 mb-1">¿Qué dificultad querés?</h1>
+  <p class="text-body-secondary mb-4">Hola, <%= jugador_actual.nombre %>. Cuanto más difícil, más puntos.</p>
+
+  <div class="row row-cols-1 row-cols-md-3 g-3">
+    <% @dificultades.each do |dificultad| %>
+      <div class="col">
+        <%= link_to new_partida_path(dificultad: dificultad.nombre),
+                    class: "card h-100 text-decoration-none text-reset border-2 shadow-sm" do %>
+          <div class="card-body text-center py-4">
+            <h2 class="h4 mb-2"><%= dificultad %></h2>
+            <p class="small text-body-secondary mb-0">
+              Tiempo de referencia: <%= dificultad.tiempo / 60 %> min
+            </p>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

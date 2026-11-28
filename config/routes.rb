@@ -2,6 +2,10 @@ Rails.application.routes.draw do
   # Sitio público (jugadores, sin login).
   root "inicio#index"
   get "como-se-juega", to: "paginas#como_se_juega", as: :como_se_juega
+  # El jugador actual (el de la cookie): elegir nombre.
+  resource :jugador, only: %i[new create]
+  # Jugar: elegir dificultad (new), «Jugar» (create) y la partida (show).
+  resources :partidas, only: %i[new create show]
 
   # Login del backend (generado con bin/rails generate authentication).
   resource :session
