@@ -13,9 +13,16 @@ class Sincronizacion < ApplicationRecord
 
   scope :recientes, -> { order(created_at: :desc) }
 
-  # Versión de la última sincronización que procesó el catálogo, para saber si hay cambios.
-  def self.ultima_version_exitosa
-    exitosa.order(:created_at, :id).last&.version
+  # La última sincronización que procesó el catálogo, para saber si hay cambios.
+  def self.ultima_exitosa
+    exitosa.order(:created_at, :id).last
+  end
+
+  # ¿Ya se procesó esta versión desde esta misma URL? Si cambia cualquiera de las dos
+  # (por ejemplo, se apunta a un fork con la misma versión), hay que volver a sincronizar.
+  def self.ya_sincronizada?(version:, url:)
+    ultima = ultima_exitosa
+    ultima.present? && ultima.version == version && ultima.url == url
   end
 
   # Texto corto para el informe: «Sin cambios», el motivo del error o las cantidades.

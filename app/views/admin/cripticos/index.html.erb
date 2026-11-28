@@ -11,7 +11,7 @@
        dificultad: [ "Todas las dificultades", Dificultad::NOMBRES.invert.to_a ],
        tipo: [ "Todos los tipos", Tipo::NOMBRES.invert.to_a ],
        estado: [ "Activos e inactivos", [ [ "Activos", "activos" ], [ "Inactivos", "inactivos" ] ] ],
-       origen: [ "Todos los orígenes", Admin::CripticosHelper::ORIGENES.invert.to_a ]
+       origen: [ "Todos los orígenes", opciones_de_origen ]
      } %>
   <% filtros.each do |campo, (todos, opciones)| %>
     <div class="col-6 col-md-3">

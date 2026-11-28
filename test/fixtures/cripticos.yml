@@ -11,6 +11,7 @@ camisa:
   ayuda: El hogar es una palabra de cuatro letras. Partila al medio y meté MI.
   explicacion: "MI dentro de CASA (el hogar): CA + MI + SA = CAMISA."
   autor: Cátedra
+  origen: ecorrons.github.io
 
 mora:
   id_fuente: prueba-003
@@ -25,3 +26,4 @@ mora:
   ayuda: Reordená las letras de la primera palabra.
   explicacion: AMOR desordenado da MORA.
   autor: Cátedra
+  origen: ecorrons.github.io

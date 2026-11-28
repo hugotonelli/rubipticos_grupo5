@@ -7,7 +7,8 @@ require "net/http"
 #
 # Reglas (enunciado, «Reglas de la sincronización»):
 # 1. GET a la URL configurada con timeout de 10 s. Si falla la red o el JSON no parsea, no se toca nada.
-# 2. Si la versión es la de la última sincronización exitosa: «Sin cambios».
+# 2. Si la versión y la URL son las de la última sincronización exitosa: «Sin cambios»
+#    (si cambia cualquiera de las dos, se vuelve a sincronizar, como sugirió la cátedra).
 # 3. Cada críptico se identifica por su id de la fuente: si no existe se crea; si cambió, se actualiza.
 # 4. Un críptico inválido se saltea y se informa con su id y el motivo. Si un id aparece repetido
 #    dentro del mismo catálogo, se usa la primera aparición y se rechazan las siguientes.
@@ -36,7 +37,7 @@ class SincronizadorDeCripticos
     catalogo = leer_catalogo
     version = catalogo["version"].to_s
 
-    return registrar(:sin_cambios, version: version) if version == Sincronizacion.ultima_version_exitosa
+    return registrar(:sin_cambios, version: version) if Sincronizacion.ya_sincronizada?(version: version, url: @url)
 
     Criptico.transaction do
       procesar(catalogo["cripticos"])
@@ -145,8 +146,17 @@ class SincronizadorDeCripticos
       ayuda: datos["ayuda"],
       explicacion: datos["explicacion"],
       autor: datos["autor"],
-      origen: datos["id"].to_s.start_with?("cr-") ? "catedra" : "propio"
+      origen: origen
     }
+  end
+
+  # Host de la URL de la fuente ("ecorrons.github.io", "localhost:4567"): de dónde vino el críptico.
+  # Si el mismo id llega después desde otra URL, se actualiza y su origen pasa a ser el nuevo.
+  def origen
+    @origen ||= begin
+      uri = URI.parse(@url)
+      uri.port == uri.default_port ? uri.host : "#{uri.host}:#{uri.port}"
+    end
   end
 
   def motivo_de_rechazo(criptico, datos)

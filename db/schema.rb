@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_28_140843) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_28_141907) do
   create_table "configuraciones", force: :cascade do |t|
     t.string "url_fuente", null: false
     t.text "texto_bienvenida", default: "", null: false
@@ -34,7 +34,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_28_140843) do
     t.integer "dificultad_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "origen", default: "catedra", null: false
+    t.string "origen", null: false
     t.boolean "desactivado_por_sincronizacion", default: false, null: false
     t.index ["activo"], name: "index_cripticos_on_activo"
     t.index ["dificultad_id"], name: "index_cripticos_on_dificultad_id"
@@ -42,7 +42,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_28_140843) do
     t.index ["origen"], name: "index_cripticos_on_origen"
     t.index ["tipo_id"], name: "index_cripticos_on_tipo_id"
     t.check_constraint "enumeracion GLOB '(*)'", name: "cripticos_enumeracion_entre_parentesis"
-    t.check_constraint "origen IN ('catedra', 'propio')", name: "cripticos_origen_valido"
   end
 
   create_table "dificultades", force: :cascade do |t|

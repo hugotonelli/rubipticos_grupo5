@@ -6,8 +6,6 @@ class Criptico < ApplicationRecord
   # Enumeración como viene en la API: "(6)", o "(3,4)" si la respuesta tiene varias palabras.
   FORMATO_ENUMERACION = /\A\(\d+(,\d+)*\)\z/
 
-  # De qué fuente vino: los de la cátedra usan ids "cr-..."; los propios, otro prefijo (por ejemplo "g5-").
-  ORIGENES = %w[catedra propio].freeze
 
   # Tipo y dificultad son tablas propias porque sus puntos y multiplicadores se editan desde el backend.
   belongs_to :tipo
@@ -19,7 +17,9 @@ class Criptico < ApplicationRecord
   scope :inactivos, -> { where(activo: false) }
   scope :ordenados, -> { order(:id_fuente) }
 
-  validates :origen, inclusion: { in: ORIGENES }
+  # De qué fuente vino: el host de la URL desde la que se sincronizó (la API de la cátedra,
+  # un fork o un servidor local). Lo fija el sincronizador.
+  validates :origen, presence: true
 
   # Filtros del listado del backend (dificultad, tipo, estado y origen). Los vacíos se ignoran.
   #   Criptico.filtrar(dificultad: "facil", estado: "activos")

@@ -12,7 +12,8 @@ class CripticoTest < ActiveSupport::TestCase
       indicadores: [ "esconde" ],
       materiales: [ "cama tejida" ],
       tipo: tipos(:oculta),
-      dificultad: dificultades(:facil)
+      dificultad: dificultades(:facil),
+      origen: "ecorrons.github.io"
     }.merge(cambios))
   end
 
@@ -30,7 +31,8 @@ class CripticoTest < ActiveSupport::TestCase
       dificultad: Dificultad.find_by(nombre: datos["dificultad"]),
       ayuda: datos["ayuda"],
       explicacion: datos["explicacion"],
-      autor: datos["autor"]
+      autor: datos["autor"],
+      origen: "ecorrons.github.io"
     )
   end
 
@@ -174,7 +176,8 @@ class CripticoTest < ActiveSupport::TestCase
     assert_equal [ cripticos(:camisa) ], Criptico.filtrar(tipo: "contenedor").to_a
     assert_equal [ cripticos(:camisa) ], Criptico.filtrar(estado: "inactivos").to_a
     assert_equal [ cripticos(:mora) ], Criptico.filtrar(estado: "activos").to_a
-    assert_empty Criptico.filtrar(origen: "propio")
+    assert_empty Criptico.filtrar(origen: "localhost:4567")
+    assert_equal 2, Criptico.filtrar(origen: "ecorrons.github.io").count
     assert_equal 2, Criptico.filtrar(dificultad: "", tipo: nil).count
   end
 
