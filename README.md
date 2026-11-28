@@ -130,7 +130,7 @@ Se validan en **dos lugares**: en la base (migraciones) y en el modelo.
 | Tipo y dificultad: solo los valores del enunciado, nombre único | check constraint + índice único | `inclusion` + `uniqueness` |
 | Tipo: puntos enteros entre 10 y 1000 | check constraint | `numericality` |
 | Dificultad: multiplicador mayor que 0 y hasta 5 | check constraint | `numericality` |
-| Jugador: nombre de 3 a 20, único sin distinguir mayúsculas | check + índice único sobre `lower(nombre)` | `length` + `uniqueness(case_sensitive: false)` |
+| Jugador: nombre de 3 a 20, único sin distinguir mayúsculas | check + índice único sobre `nombre_clave` | `length` + validación sobre `nombre_clave` |
 | Partida: un críptico por jugador | índice único | `uniqueness(scope:)` |
 | Partida: hasta 5 intentos y 4 pistas | check constraints | `numericality` |
 | Usuario: rol válido | check constraint | `enum ... validate: true` |
@@ -183,10 +183,13 @@ Se validan en **dos lugares**: en la base (migraciones) y en el modelo.
   `before_action :requerir_jugador` manda a elegir nombre si todavía no tiene. Un jugador
   **bloqueado** (nombre ofensivo) no puede seguir jugando: tiene que crear un jugador nuevo, como
   sugirió la cátedra. Si el nombre está
-  tomado, `SugeridorDeNombre` propone una variante (`Pedrito_2`).
+  tomado, `SugeridorDeNombre` propone una variante (`Pedrito_2`). Para que «Ñandú» y «ñandú»
+  cuenten como el mismo nombre, se guarda `nombre_clave` (el nombre en minúsculas calculado en
+  Ruby) con índice único: el `lower()` de SQLite solo entiende letras sin tilde. Si ya tiene
+  jugador, no puede crear otro sin pasar por el aviso de «empezar como otro jugador».
 - **Empezar a jugar** (`IniciadorDePartida`): el críptico se asigna al azar recién al apretar
   «Jugar» (entre los activos de esa dificultad que el jugador no jugó), así no se guarda nada en el
-  navegador mientras elige. Un jugador tiene como máximo una partida en curso (validación + índice
+  navegador mientras elige; antes de mostrar el botón ya se verifica que le queden crípticos. Un jugador tiene como máximo una partida en curso (validación + índice
   único parcial): si cerró la pestaña, al volver a «Jugar» retoma esa.
 - **Partidas**: el tiempo oficial es `finalizada_at - iniciada_at`, medido en el servidor.
   Los puntos se guardan al resolver, así un cambio de configuración no recalcula partidas viejas.
