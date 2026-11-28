@@ -175,6 +175,14 @@ Se validan en **dos lugares**: en la base (migraciones) y en el modelo.
 - **Jugadores**: sin cuenta; los identifica un token (`has_secure_token`) que va en una cookie
   firmada. La racha se guarda en el jugador (`racha_actual`, `mejor_racha`, `ultimo_dia_jugado`)
   y `racha_vigente` la da por cortada si no jugó ayer ni hoy.
+- **Jugador actual**: el concern `JugadorActual` (incluido en `ApplicationController`) lee el token
+  de la cookie firmada `jugador_token` y da `jugador_actual` en controladores y vistas;
+  `before_action :requerir_jugador` manda a elegir nombre si todavía no tiene. Si el nombre está
+  tomado, `SugeridorDeNombre` propone una variante (`Pedrito_2`).
+- **Empezar a jugar** (`IniciadorDePartida`): el críptico se asigna al azar recién al apretar
+  «Jugar» (entre los activos de esa dificultad que el jugador no jugó), así no se guarda nada en el
+  navegador mientras elige. Un jugador tiene como máximo una partida en curso (validación + índice
+  único parcial): si cerró la pestaña, al volver a «Jugar» retoma esa.
 - **Partidas**: el tiempo oficial es `finalizada_at - iniciada_at`, medido en el servidor.
   Los puntos se guardan al resolver, así un cambio de configuración no recalcula partidas viejas.
 - **Validaciones en dos niveles**: en el modelo (`validates`) y en la base (`null: false`,

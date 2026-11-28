@@ -25,6 +25,9 @@ El README tiene la instalación, el modelo de datos y las decisiones de diseño.
   para mostrar se usa `to_s` («Fácil», «Doble definición»).
 - Crípticos: `id` numérico propio; el id de la API va en `id_fuente`.
 - Configuración general: `Configuracion.actual` (una sola fila).
+- Jugador actual: `jugador_actual` (concern `JugadorActual`); en los controladores que lo necesitan,
+  `before_action :requerir_jugador`. Empezar partida: `IniciadorDePartida.call(jugador:, dificultad:)`.
+  La partida (`PartidasController#show`) es donde se agregan intentos, pistas y rendirse.
 - Comparar textos (respuestas, enumeración, anagramas) siempre con `NormalizadorDeTexto.call`.
 - Seeds idempotentes (`find_or_create_by!`).
 - Commits en castellano, en tercera persona y que digan qué hacen ("Agrega...", "Corrige...").
