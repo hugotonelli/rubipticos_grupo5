@@ -29,4 +29,20 @@ class JugadorTest < ActiveSupport::TestCase
   test "visibles no incluye a los bloqueados" do
     assert_not_includes Jugador.visibles, jugadores(:bloqueado)
   end
+
+  test "el nombre es único sin distinguir mayúsculas, también con Ñ y tildes" do
+    Jugador.create!(nombre: "Ñandú")
+
+    assert_not Jugador.new(nombre: "ñandú").valid?
+    assert_not Jugador.new(nombre: "ÑANDÚ").valid?
+  end
+
+  test "si la base rechaza un nombre repetido (dos altas al mismo tiempo), guardar lo informa sin romper" do
+    Jugador.create!(nombre: "Simultaneo")
+    jugador = Jugador.new(nombre: "simultaneo")
+    def jugador.nombre_disponible = nil # simula que la validación pasó antes de que el otro se guardara
+
+    assert_not jugador.guardar
+    assert jugador.errors.of_kind?(:nombre, :taken)
+  end
 end

@@ -3,6 +3,8 @@
 <div class="py-5 text-center">
   <h1 class="display-5 fw-bold">Rubípticos</h1>
   <p class="lead"><%= @configuracion.texto_bienvenida %></p>
-  <%# TODO: botón para jugar cuando exista el flujo de partida. %>
-  <%= link_to "Cómo se juega", como_se_juega_path, class: "btn btn-outline-danger" %>
+  <div class="d-flex flex-wrap justify-content-center gap-2">
+    <%= link_to "Jugar", new_partida_path, class: "btn btn-danger btn-lg px-4" %>
+    <%= link_to "Cómo se juega", como_se_juega_path, class: "btn btn-outline-danger btn-lg" %>
+  </div>
 </div>

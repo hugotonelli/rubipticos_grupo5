@@ -25,6 +25,9 @@ El README tiene la instalación, el modelo de datos y las decisiones de diseño.
   para mostrar se usa `to_s` («Fácil», «Doble definición»).
 - Crípticos: `id` numérico propio; el id de la API va en `id_fuente`.
 - Configuración general: `Configuracion.actual` (una sola fila).
+- Jugador actual: `jugador_actual` (concern `JugadorActual`); en los controladores que lo necesitan,
+  `before_action :requerir_jugador`. Empezar partida: `IniciadorDePartida.call(jugador:, dificultad:)`.
+  La partida (`PartidasController#show`) es donde se agregan intentos, pistas y rendirse.
 - Comparar textos (respuestas, enumeración, anagramas) siempre con `NormalizadorDeTexto.call`.
 - Seeds idempotentes (`find_or_create_by!`).
 - Commits en castellano, en tercera persona y que digan qué hacen ("Agrega...", "Corrige...").
@@ -68,7 +71,8 @@ El README tiene la instalación, el modelo de datos y las decisiones de diseño.
 - Lógica en un servicio (`SincronizadorDeCripticos`), nunca en el controlador.
 - GET por HTTP a `Configuracion.actual.url_fuente`, timeout de 10 s. **Prohibido leer el JSON del disco.**
 - Si falla la red o el JSON no parsea, no se toca nada y se informa.
-- Si `version` coincide con la última sincronización exitosa: "Sin cambios".
+- Si `version` **y la URL** coinciden con la última sincronización exitosa: "Sin cambios"
+  (`Sincronizacion.ya_sincronizada?`). El origen de cada críptico es el host de la URL de la fuente.
 - Identificar por `id` de la fuente (`id_fuente`): crear si no existe, actualizar si cambió.
   Inválidos se saltean y se informan con id y motivo. Los que ya no vienen se **desactivan**, no se borran.
 - Registrar cada sincronización: fecha, admin, versión, creados, actualizados, desactivados, rechazados.

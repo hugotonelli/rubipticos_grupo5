@@ -12,6 +12,9 @@ class Partida < ApplicationRecord
   validates :finalizada_at, presence: true, unless: :en_curso?
   # Cada críptico se juega una sola vez por jugador.
   validates :criptico_id, uniqueness: { scope: :jugador_id, message: "ya fue jugado por este jugador" }
+  # Como máximo una partida en curso por jugador (al volver, retoma esa).
+  validates :jugador_id, uniqueness: { conditions: -> { en_curso }, message: "ya tiene una partida en curso" },
+                         if: :en_curso?
   validates :intentos, numericality: { only_integer: true, in: 0..MAXIMO_INTENTOS }
   validates :pistas_usadas, numericality: { only_integer: true, in: 0..MAXIMO_PISTAS }
   validates :puntos, numericality: { only_integer: true, greater_than_or_equal_to: 0 }

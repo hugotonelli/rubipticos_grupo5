@@ -37,7 +37,7 @@ class SincronizadorDeCripticosTest < ActiveSupport::TestCase
     assert_equal "(6)", camisa.enumeracion
     assert_equal [ "Mi", "el hogar" ], camisa.materiales
     assert_equal "contenedor", camisa.tipo.nombre
-    assert_equal "catedra", camisa.origen
+    assert_equal "ecorrons.github.io", camisa.origen
   end
 
   test "si la versión es la de la última sincronización exitosa, no hay cambios" do
@@ -106,13 +106,16 @@ class SincronizadorDeCripticosTest < ActiveSupport::TestCase
     assert_match "una planta", motivos["cr-107"]
   end
 
-  test "un críptico con id propio queda con origen propio" do
-    propio = @catalogo["cripticos"].first.merge("id" => "g5-001")
-    la_fuente_devuelve(con_version("con-propio", [ propio ]))
-
+  test "si la misma versión llega desde otra URL, vuelve a sincronizar y cambia el origen" do
+    la_fuente_devuelve(@catalogo)
     sincronizar
+    otra_url = "http://localhost:4567/v1/cryptics.json"
+    stub_request(:get, otra_url).to_return(body: @catalogo.to_json)
 
-    assert_equal "propio", Criptico.find_by!(id_fuente: "g5-001").origen
+    sincronizacion = SincronizadorDeCripticos.call(usuario: @admin, url: otra_url)
+
+    assert sincronizacion.exitosa?, "misma versión pero otra URL: no es «Sin cambios»"
+    assert_equal "localhost:4567", Criptico.find_by!(id_fuente: "cr-013").origen
   end
 
   test "si la fuente no responde, falla sin tocar nada" do

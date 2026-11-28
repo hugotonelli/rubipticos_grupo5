@@ -1,0 +1,38 @@
+<% content_for :title, "Elegí tu nombre" %>
+
+<div class="row justify-content-center">
+  <div class="col-sm-10 col-md-6 col-lg-5">
+    <h1 class="h3 mb-2">Elegí tu nombre</h1>
+    <p class="text-body-secondary">
+      No hace falta cuenta ni contraseña: te recordamos en este navegador.
+      Con este nombre aparecés en la tabla de posiciones.
+    </p>
+
+    <%= form_with model: @jugador, url: jugador_path do |form| %>
+      <div class="mb-3">
+        <%= form.label :nombre, class: "form-label" %>
+        <%= form.text_field :nombre, required: true, autofocus: true, maxlength: 20, autocomplete: "off",
+                            class: "form-control #{"is-invalid" if @jugador.errors[:nombre].any?}" %>
+        <% @jugador.errors.full_messages_for(:nombre).each do |mensaje| %>
+          <div class="invalid-feedback"><%= mensaje %></div>
+        <% end %>
+        <div class="form-text">Entre 3 y 20 caracteres.</div>
+      </div>
+
+      <% if @sugerencia %>
+        <div class="alert alert-light border small">
+          Ese nombre ya está tomado. ¿Qué tal <strong><%= @sugerencia %></strong>?
+        </div>
+      <% end %>
+
+      <div class="d-flex flex-wrap gap-2">
+        <%= form.submit "Empezar", class: "btn btn-danger" %>
+      </div>
+    <% end %>
+
+    <% if @sugerencia %>
+      <%= button_to "Usar #{@sugerencia}", jugador_path, params: { jugador: { nombre: @sugerencia } },
+                    class: "btn btn-outline-danger mt-2" %>
+    <% end %>
+  </div>
+</div>

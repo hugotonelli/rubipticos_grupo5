@@ -1,9 +1,16 @@
 require "test_helper"
 
 class SincronizacionTest < ActiveSupport::TestCase
-  test "la última versión exitosa ignora las fallidas y las sin cambios" do
+  test "la última exitosa ignora las fallidas" do
     Sincronizacion.create!(user: users(:one), url: "https://x.test/c.json", estado: :fallida, mensaje: "timeout")
-    assert_equal "2026-10-19.1", Sincronizacion.ultima_version_exitosa
+    assert_equal sincronizaciones(:inicial), Sincronizacion.ultima_exitosa
+  end
+
+  test "ya está sincronizada solo si coinciden la versión y la URL" do
+    url = sincronizaciones(:inicial).url
+    assert Sincronizacion.ya_sincronizada?(version: "2026-10-19.1", url: url)
+    assert_not Sincronizacion.ya_sincronizada?(version: "otra", url: url)
+    assert_not Sincronizacion.ya_sincronizada?(version: "2026-10-19.1", url: "http://localhost:4567/v1/cryptics.json")
   end
 
   test "una fallida necesita el motivo" do

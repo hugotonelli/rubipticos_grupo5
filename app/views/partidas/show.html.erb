@@ -1,0 +1,28 @@
+<% content_for :title, "Partida" %>
+
+<%# Ojo: en esta vista nunca va la respuesta mientras la partida está en curso (la valida el servidor). %>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+  <span class="badge text-bg-light border fs-6"><%= @criptico.dificultad %></span>
+  <%# TODO (módulo de juego): cronómetro visual con Stimulus, a partir de @partida.iniciada_at.
+      El tiempo oficial lo calcula el servidor. %>
+  <span class="small text-body-secondary">
+    Empezaste <%= l(@partida.iniciada_at, format: :short) %>
+  </span>
+</div>
+
+<div class="text-center py-3 mb-4">
+  <p class="fs-3 mb-1"><%= @criptico.enunciado %></p>
+  <p class="fs-5 text-body-secondary"><%= @criptico.enumeracion %></p>
+</div>
+
+<% if @partida.en_curso? %>
+  <%# TODO (módulo de juego): formulario de respuesta (hasta 5 intentos, validados en el servidor),
+      pistas en orden (tipo, definición, indicador y material, ayuda) y botón Rendirse. %>
+  <p class="text-center text-body-secondary small">
+    Intentos usados: <%= @partida.intentos %> de <%= Partida::MAXIMO_INTENTOS %> ·
+    Pistas: <%= @partida.pistas_usadas %> de <%= Partida::MAXIMO_PISTAS %>
+  </p>
+<% else %>
+  <%# TODO (módulo de juego): resultado, puntos y explicación. %>
+  <p class="text-center">Esta partida ya terminó.</p>
+<% end %>

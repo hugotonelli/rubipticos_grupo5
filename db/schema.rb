@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_23_143500) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_28_142602) do
   create_table "configuraciones", force: :cascade do |t|
     t.string "url_fuente", null: false
     t.text "texto_bienvenida", default: "", null: false
@@ -34,7 +34,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_143500) do
     t.integer "dificultad_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "origen", default: "catedra", null: false
+    t.string "origen", null: false
     t.boolean "desactivado_por_sincronizacion", default: false, null: false
     t.index ["activo"], name: "index_cripticos_on_activo"
     t.index ["dificultad_id"], name: "index_cripticos_on_dificultad_id"
@@ -42,7 +42,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_143500) do
     t.index ["origen"], name: "index_cripticos_on_origen"
     t.index ["tipo_id"], name: "index_cripticos_on_tipo_id"
     t.check_constraint "enumeracion GLOB '(*)'", name: "cripticos_enumeracion_entre_parentesis"
-    t.check_constraint "origen IN ('catedra', 'propio')", name: "cripticos_origen_valido"
   end
 
   create_table "dificultades", force: :cascade do |t|
@@ -66,7 +65,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_143500) do
     t.date "ultimo_dia_jugado"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index "lower(nombre)", name: "index_jugadores_on_lower_nombre", unique: true
+    t.string "nombre_clave", null: false
+    t.index ["nombre_clave"], name: "index_jugadores_on_nombre_clave", unique: true
     t.index ["token"], name: "index_jugadores_on_token", unique: true
     t.check_constraint "length(nombre) BETWEEN 3 AND 20", name: "jugadores_nombre_largo"
     t.check_constraint "racha_actual >= 0 AND mejor_racha >= racha_actual", name: "jugadores_rachas_validas"
@@ -87,6 +87,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_143500) do
     t.index ["estado", "finalizada_at"], name: "index_partidas_on_estado_and_finalizada_at"
     t.index ["jugador_id", "criptico_id"], name: "index_partidas_on_jugador_id_and_criptico_id", unique: true
     t.index ["jugador_id"], name: "index_partidas_on_jugador_id"
+    t.index ["jugador_id"], name: "index_partidas_una_en_curso_por_jugador", unique: true, where: "estado = 0"
     t.check_constraint "estado = 0 OR finalizada_at IS NOT NULL", name: "partidas_finalizada_tiene_fecha"
     t.check_constraint "estado IN (0, 1, 2)", name: "partidas_estado_valido"
     t.check_constraint "intentos BETWEEN 0 AND 5", name: "partidas_intentos_en_rango"
