@@ -36,4 +36,13 @@ class JugadoresControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to new_partida_path
   end
+
+  test "si ya tiene jugador, no puede crear otro sin pasar por el aviso" do
+    jugar_como jugadores(:pedrito)
+
+    assert_no_difference -> { Jugador.count } do
+      post jugador_path, params: { jugador: { nombre: "OtroMas" } }
+    end
+    assert_redirected_to new_partida_path
+  end
 end

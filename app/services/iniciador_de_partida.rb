@@ -5,7 +5,7 @@
 #   partida.persisted?  # => false si no quedan crípticos o la dificultad no existe (ver partida.errors)
 #
 # El críptico se asigna recién al apretar «Jugar»: así no hay que guardar nada en el navegador
-# mientras el jugador decide.
+# mientras el jugador decide. Antes de mostrar el botón, la pantalla ya verifica que queden crípticos.
 class IniciadorDePartida
   def self.call(jugador:, dificultad:)
     new(jugador: jugador, dificultad: dificultad).call
@@ -21,7 +21,7 @@ class IniciadorDePartida
     en_curso = @jugador.partida_en_curso
     return en_curso if en_curso
 
-    partida = @jugador.partidas.build(estado: :en_curso)
+    partida = Partida.new(jugador: @jugador, estado: :en_curso)
     criptico = criptico_al_azar
 
     if @dificultad.nil?
@@ -34,6 +34,10 @@ class IniciadorDePartida
       partida.save
     end
     partida
+  rescue ActiveRecord::RecordNotUnique
+    # Otro pedido del mismo jugador (otra pestaña, doble clic) empezó una partida al mismo tiempo:
+    # la base rechazó la segunda por el índice único. Se retoma la que quedó.
+    Partida.en_curso.find_by(jugador: @jugador) || partida
   end
 
   private
@@ -41,9 +45,6 @@ class IniciadorDePartida
   def criptico_al_azar
     return if @dificultad.nil?
 
-    ids = Criptico.activos.where(dificultad: @dificultad)
-                  .where.not(id: @jugador.partidas.select(:criptico_id))
-                  .pluck(:id)
-    Criptico.find_by(id: ids.sample)
+    Criptico.find_by(id: Criptico.disponibles_para(@jugador, @dificultad).pluck(:id).sample)
   end
 end

@@ -79,4 +79,13 @@ class PartidasControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
   end
+
+  test "si no le quedan crípticos de esa dificultad, no muestra el botón Jugar" do
+    jugar_como jugadores(:pedrito)
+
+    get new_partida_path(dificultad: "facil")
+
+    assert_select "button", { text: "Jugar", count: 0 }
+    assert_select ".alert", /Ya jugaste todos/
+  end
 end

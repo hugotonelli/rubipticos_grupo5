@@ -15,6 +15,8 @@ class PartidasController < ApplicationController
 
     @dificultad = Dificultad.find_by(nombre: params[:dificultad])
     @dificultades = Dificultad.order(:multiplicador)
+    # Antes de mostrar «Jugar», se verifica que le queden crípticos de esa dificultad.
+    @quedan_cripticos = @dificultad && Criptico.disponibles_para(jugador_actual, @dificultad).exists?
   end
 
   def create

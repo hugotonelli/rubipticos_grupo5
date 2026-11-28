@@ -21,7 +21,7 @@
             <li class="nav-item"><span class="nav-link disabled" aria-disabled="true">Tabla de posiciones</span></li>
             <li class="nav-item"><%= link_to "Cómo se juega", como_se_juega_path, class: "nav-link" %></li>
           </ul>
-          <% if jugador_actual %>
+          <% if jugador_actual && !jugador_actual.bloqueado? %>
             <span class="navbar-text ms-md-3 small"><i class="bi bi-person-circle"></i> <%= jugador_actual.nombre %></span>
           <% end %>
         </div>

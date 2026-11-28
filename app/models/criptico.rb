@@ -16,6 +16,10 @@ class Criptico < ApplicationRecord
   scope :activos, -> { where(activo: true) }
   scope :inactivos, -> { where(activo: false) }
   scope :ordenados, -> { order(:id_fuente) }
+  # Los que un jugador puede jugar en una dificultad: activos y que todavía no jugó.
+  scope :disponibles_para, lambda { |jugador, dificultad|
+    activos.where(dificultad: dificultad).where.not(id: jugador.partidas.select(:criptico_id))
+  }
 
   # De qué fuente vino: el host de la URL desde la que se sincronizó (la API de la cátedra,
   # un fork o un servidor local). Lo fija el sincronizador.
