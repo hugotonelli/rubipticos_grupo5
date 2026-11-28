@@ -3,6 +3,25 @@
 Sitio para jugar crípticos (acertijos de palabras en español), hecho en Ruby on Rails.
 Trabajo Final Integrador de TTPS opción Ruby 2026 (UNLP), grupo 5.
 
+## Estado del proyecto
+
+**Hecho**
+
+- Base: CI, español y hora de Buenos Aires, layouts con menú, login del backend con roles
+  (administrador y editor de puntajes) y permisos por controlador.
+- Catálogo: validaciones del críptico y sincronización con la API (botón «Sincronizar ahora»,
+  informe e historial). Backend de crípticos: filtros, estadísticas y activar o desactivar.
+- Juego, arranque: elegir nombre (cookie firmada, sugerencia `Pedrito_2`), elegir dificultad,
+  botón Jugar y la partida con el enunciado (retoma la partida abierta).
+
+**Falta**
+
+- Juego: responder (5 intentos), pistas, rendirse, resolver (puntaje y racha), cronómetro,
+  Mi racha, cambiar nombre y «empezar como otro jugador».
+- Backend: usuarios, puntos por tipo y multiplicadores, configuración (URL de la fuente y
+  bienvenida), jugadores (listar, bloquear, reiniciar la tabla).
+- Tabla de posiciones y la página «Cómo se juega» completa.
+
 ## Requisitos
 
 | Herramienta | Versión | Para qué |
